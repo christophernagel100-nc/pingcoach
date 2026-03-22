@@ -116,7 +116,7 @@ export function VideoAnalyser() {
       toast.success("Analyse abgeschlossen!");
     } catch (err) {
       console.error("Analyse error:", err);
-      toast.error(err instanceof Error ? err.message : "Analyse fehlgeschlagen");
+      toast.error(err instanceof Error ? err.message : "Analyse fehlgeschlagen", { duration: Infinity });
       setStep("upload");
     }
   }, [videoFile, strokeType, consentGiven]);
