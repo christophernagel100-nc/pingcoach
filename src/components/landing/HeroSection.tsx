@@ -1,23 +1,8 @@
 'use client'
 
-import dynamic from 'next/dynamic'
 import { motion } from 'motion/react'
 import { WaitlistForm } from '@/components/waitlist-form'
-
-const InteractivePaddle = dynamic(() => import('./InteractivePaddle'), {
-  ssr: false,
-  loading: () => (
-    <div
-      className="flex h-full w-full items-center justify-center rounded-2xl"
-      style={{
-        background: 'rgba(16, 185, 129, 0.05)',
-        border: '1px solid rgba(16, 185, 129, 0.1)',
-      }}
-    >
-      <div className="h-8 w-8 animate-spin rounded-full border-2 border-transparent border-t-emerald" />
-    </div>
-  ),
-})
+import InteractivePaddle from './InteractivePaddle'
 
 const ease = [0.16, 1, 0.3, 1] as const
 
