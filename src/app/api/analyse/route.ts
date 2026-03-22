@@ -1,28 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
-import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
 import { analyseWithGemini } from "@/lib/gemini";
 
-const analyseSchema = z.object({
-  poseData: z.object({
-    frames: z.array(z.object({
-      timestamp: z.number(),
-      keypoints: z.array(z.object({
-        name: z.string(),
-        x: z.number(),
-        y: z.number(),
-        z: z.number().optional(),
-        visibility: z.number(),
-      })),
-    })),
-    fps: z.number(),
-    durationSeconds: z.number(),
-    jointAngles: z.record(z.string(), z.array(z.number())).optional(),
-    velocities: z.record(z.string(), z.array(z.number())).optional(),
-  }),
-  strokeType: z.string().optional(),
-  analysisType: z.enum(["einzelschlag", "sequenz", "match"]).default("einzelschlag"),
-});
+const MAX_VIDEO_SIZE = 100 * 1024 * 1024; // 100 MB
+const ALLOWED_MIME_TYPES = ["video/mp4", "video/quicktime", "video/webm", "video/x-matroska"];
 
 export async function POST(req: NextRequest) {
   try {
@@ -33,14 +14,21 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Nicht autorisiert" }, { status: 401 });
     }
 
-    const body = await req.json();
-    const parsed = analyseSchema.safeParse(body);
+    const formData = await req.formData();
+    const videoFile = formData.get("video") as File | null;
+    const strokeType = formData.get("strokeType") as string | null;
+    const analysisType = (formData.get("analysisType") as string) || "einzelschlag";
 
-    if (!parsed.success) {
-      return NextResponse.json(
-        { error: "Ungueltige Daten", details: parsed.error.issues },
-        { status: 400 }
-      );
+    if (!videoFile) {
+      return NextResponse.json({ error: "Kein Video hochgeladen" }, { status: 400 });
+    }
+
+    if (!ALLOWED_MIME_TYPES.includes(videoFile.type)) {
+      return NextResponse.json({ error: "Ungültiges Video-Format" }, { status: 400 });
+    }
+
+    if (videoFile.size > MAX_VIDEO_SIZE) {
+      return NextResponse.json({ error: "Video darf maximal 100 MB gross sein" }, { status: 400 });
     }
 
     // Get player profile for context
@@ -50,13 +38,18 @@ export async function POST(req: NextRequest) {
       .eq("id", user.id)
       .single();
 
+    // Convert File to Buffer for Gemini
+    const arrayBuffer = await videoFile.arrayBuffer();
+    const videoBuffer = Buffer.from(arrayBuffer);
+
     // Send to Gemini for analysis
     const aiResult = await analyseWithGemini({
-      poseData: parsed.data.poseData,
-      strokeType: parsed.data.strokeType,
+      videoBuffer,
+      videoMimeType: videoFile.type,
+      strokeType: strokeType || undefined,
       playerLevel: profile?.level,
       playerWeaknesses: profile?.weaknesses,
-      analysisType: parsed.data.analysisType,
+      analysisType,
     });
 
     // Save to database
@@ -64,14 +57,14 @@ export async function POST(req: NextRequest) {
       .from("pc_analyses")
       .insert({
         user_id: user.id,
-        stroke_type: parsed.data.strokeType || null,
-        pose_data: parsed.data.poseData,
+        stroke_type: strokeType || null,
+        pose_data: null,
         ai_feedback: aiResult.summary,
         ai_feedback_structured: aiResult,
         overall_score: aiResult.overall_score,
         improvement_areas: aiResult.weaknesses?.map((w: { area: string }) => w.area) || [],
-        video_duration_seconds: Math.round(parsed.data.poseData.durationSeconds),
-        analysis_type: parsed.data.analysisType,
+        video_duration_seconds: null,
+        analysis_type: analysisType,
       })
       .select()
       .single();

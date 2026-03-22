@@ -1,17 +1,23 @@
+import { GoogleAIFileManager } from "@google/generative-ai/server";
 import { GoogleGenerativeAI } from "@google/generative-ai";
+import fs from "fs";
+import os from "os";
+import path from "path";
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
+const fileManager = new GoogleAIFileManager(process.env.GEMINI_API_KEY!);
 
 const COACHING_SYSTEM_PROMPT = `Du bist PingCoach, ein erfahrener Tischtennis-Trainer und Biomechanik-Experte.
-Du analysierst Pose-Daten (Gelenkwinkel, Geschwindigkeiten, Positionen) von Tischtennis-Spielern und gibst konkretes, umsetzbares Coaching-Feedback auf Deutsch.
+Du analysierst Videos von Tischtennis-Spielern und gibst konkretes, umsetzbares Coaching-Feedback auf Deutsch.
 
 REGELN:
 - Sei konkret und spezifisch, keine generischen Tipps
-- Nenne exakte Koerperteile und Winkel wenn relevant
+- Nenne exakte Koerperteile und Bewegungen die du im Video siehst
 - Gib maximal 3 Hauptverbesserungen (Prioritaet: groesster Impact zuerst)
 - Empfehle passende Uebungen fuer jede Schwaeche
 - Lobe was gut ist — Spieler brauchen auch positive Bestaerkung
 - Passe dein Feedback an das Spieler-Level an (Anfaenger vs. Vereinsspieler)
+- Achte besonders auf: Schlaegerhaltung, Koerperhaltung, Beinarbeit, Ausschwung, Timing, Gewichtsverlagerung
 - Antworte IMMER im folgenden JSON-Format
 
 ANTWORT-FORMAT (valides JSON):
@@ -42,30 +48,12 @@ ANTWORT-FORMAT (valides JSON):
 }`;
 
 export interface AnalyseRequest {
-  poseData: PoseAnalysisData;
+  videoBuffer: Buffer;
+  videoMimeType: string;
   strokeType?: string;
   playerLevel?: string;
   playerWeaknesses?: string[];
   analysisType?: string;
-}
-
-export interface PoseAnalysisData {
-  frames: FrameData[];
-  fps: number;
-  durationSeconds: number;
-  jointAngles?: Record<string, number[]>;
-  velocities?: Record<string, number[]>;
-}
-
-export interface FrameData {
-  timestamp: number;
-  keypoints: Array<{
-    name: string;
-    x: number;
-    y: number;
-    z?: number;
-    visibility: number;
-  }>;
 }
 
 export async function analyseWithGemini(request: AnalyseRequest) {
@@ -80,66 +68,75 @@ export async function analyseWithGemini(request: AnalyseRequest) {
   });
 
   const prompt = buildPrompt(request);
-  const result = await model.generateContent(prompt);
-  const text = result.response.text();
 
-  return JSON.parse(text);
+  // For videos > 15MB use File API, otherwise inline
+  if (request.videoBuffer.length > 15 * 1024 * 1024) {
+    const uploadResult = await uploadVideoToFileAPI(request.videoBuffer, request.videoMimeType);
+    const result = await model.generateContent([
+      prompt,
+      {
+        fileData: {
+          fileUri: uploadResult.uri,
+          mimeType: uploadResult.mimeType,
+        },
+      },
+    ]);
+    return JSON.parse(result.response.text());
+  }
+
+  // Inline for smaller videos
+  const result = await model.generateContent([
+    prompt,
+    {
+      inlineData: {
+        data: request.videoBuffer.toString("base64"),
+        mimeType: request.videoMimeType,
+      },
+    },
+  ]);
+
+  return JSON.parse(result.response.text());
+}
+
+async function uploadVideoToFileAPI(buffer: Buffer, mimeType: string) {
+  const tmpPath = path.join(os.tmpdir(), `pingcoach-${Date.now()}.mp4`);
+  fs.writeFileSync(tmpPath, buffer);
+
+  try {
+    const uploadResult = await fileManager.uploadFile(tmpPath, {
+      mimeType,
+      displayName: `PingCoach Analyse ${new Date().toISOString()}`,
+    });
+
+    // Wait for processing
+    let file = uploadResult.file;
+    while (file.state === "PROCESSING") {
+      await new Promise((r) => setTimeout(r, 1000));
+      const check = await fileManager.getFile(file.name);
+      file = check;
+    }
+
+    if (file.state === "FAILED") {
+      throw new Error("Video-Verarbeitung bei Gemini fehlgeschlagen");
+    }
+
+    return { uri: file.uri, mimeType: file.mimeType };
+  } finally {
+    fs.unlinkSync(tmpPath);
+  }
 }
 
 function buildPrompt(request: AnalyseRequest): string {
-  const { poseData, strokeType, playerLevel, playerWeaknesses, analysisType } = request;
+  const { strokeType, playerLevel, playerWeaknesses, analysisType } = request;
 
-  let prompt = `Analysiere die folgenden Tischtennis-Pose-Daten:\n\n`;
+  let prompt = `Analysiere das folgende Tischtennis-Video:\n\n`;
 
   if (strokeType) prompt += `Schlagtyp: ${strokeType}\n`;
   if (playerLevel) prompt += `Spieler-Level: ${playerLevel}\n`;
   if (playerWeaknesses?.length) prompt += `Bekannte Schwaechen: ${playerWeaknesses.join(", ")}\n`;
   if (analysisType) prompt += `Analyse-Typ: ${analysisType}\n`;
 
-  prompt += `\nVideo-Dauer: ${poseData.durationSeconds}s bei ${poseData.fps} FPS\n`;
-  prompt += `Anzahl Frames: ${poseData.frames.length}\n\n`;
-
-  // Key joint angles if available
-  if (poseData.jointAngles) {
-    prompt += `Gelenkwinkel (Durchschnitt ueber alle Frames):\n`;
-    for (const [joint, angles] of Object.entries(poseData.jointAngles)) {
-      const avg = angles.reduce((a, b) => a + b, 0) / angles.length;
-      const min = Math.min(...angles);
-      const max = Math.max(...angles);
-      prompt += `  ${joint}: Avg=${avg.toFixed(1)}°, Min=${min.toFixed(1)}°, Max=${max.toFixed(1)}°\n`;
-    }
-    prompt += `\n`;
-  }
-
-  // Velocities if available
-  if (poseData.velocities) {
-    prompt += `Geschwindigkeiten (normalisiert):\n`;
-    for (const [part, vels] of Object.entries(poseData.velocities)) {
-      const max = Math.max(...vels);
-      const avg = vels.reduce((a, b) => a + b, 0) / vels.length;
-      prompt += `  ${part}: Max=${max.toFixed(2)}, Avg=${avg.toFixed(2)}\n`;
-    }
-    prompt += `\n`;
-  }
-
-  // Sample keypoints (first, middle, last frame for context)
-  const sampleFrames = getSampleFrames(poseData.frames);
-  prompt += `Keypoint-Samples (${sampleFrames.length} Frames):\n`;
-  prompt += JSON.stringify(sampleFrames, null, 2);
+  prompt += `\nBitte analysiere die Technik im Video und achte besonders auf Koerperhaltung, Schlagbewegung, Beinarbeit und Timing.`;
 
   return prompt;
-}
-
-function getSampleFrames(frames: FrameData[]): FrameData[] {
-  if (frames.length <= 5) return frames;
-
-  const indices = [
-    0,
-    Math.floor(frames.length * 0.25),
-    Math.floor(frames.length * 0.5),
-    Math.floor(frames.length * 0.75),
-    frames.length - 1,
-  ];
-
-  return [...new Set(indices)].map((i) => frames[i]);
 }

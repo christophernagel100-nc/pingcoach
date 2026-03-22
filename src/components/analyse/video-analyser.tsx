@@ -5,13 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
 import { Upload, Video, Loader2, Camera } from "lucide-react";
-import {
-  processVideo,
-  calculateJointAngles,
-  calculateVelocities,
-  drawPose,
-} from "@/lib/pose-detection";
-import type { PoseData, StructuredFeedback } from "@/lib/types";
+import type { StructuredFeedback } from "@/lib/types";
 import { AnalyseResult } from "./analyse-result";
 
 const STROKE_TYPES = [
@@ -27,19 +21,17 @@ const STROKE_TYPES = [
   { value: "sonstiges", label: "Sonstiges / Ganzes Spiel" },
 ];
 
-type AnalyseStep = "upload" | "processing" | "analysing" | "result";
+type AnalyseStep = "upload" | "analysing" | "result";
 
 export function VideoAnalyser() {
   const [step, setStep] = useState<AnalyseStep>("upload");
+  const [videoFile, setVideoFile] = useState<File | null>(null);
   const [videoUrl, setVideoUrl] = useState<string | null>(null);
   const [strokeType, setStrokeType] = useState("vorhand_topspin");
-  const [progress, setProgress] = useState(0);
   const [result, setResult] = useState<StructuredFeedback | null>(null);
   const [analysisId, setAnalysisId] = useState<string | null>(null);
   const [consentGiven, setConsentGiven] = useState(false);
 
-  const videoRef = useRef<HTMLVideoElement>(null);
-  const canvasRef = useRef<HTMLCanvasElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const cameraInputRef = useRef<HTMLInputElement>(null);
 
@@ -57,66 +49,30 @@ export function VideoAnalyser() {
       return;
     }
 
-    const url = URL.createObjectURL(file);
-    setVideoUrl(url);
+    setVideoFile(file);
+    setVideoUrl(URL.createObjectURL(file));
     setResult(null);
     setAnalysisId(null);
   }, []);
 
   const handleAnalyse = useCallback(async () => {
-    if (!videoRef.current || !videoUrl) return;
+    if (!videoFile) return;
     if (!consentGiven) {
       toast.error("Bitte stimme der Datenverarbeitung zu");
       return;
     }
 
     try {
-      // Step 1: Extract poses with MediaPipe (local)
-      setStep("processing");
-      setProgress(0);
-
-      const video = videoRef.current;
-      await new Promise<void>((resolve) => {
-        if (video.readyState >= 2) {
-          resolve();
-        } else {
-          video.onloadeddata = () => resolve();
-        }
-      });
-
-      const poseData: PoseData = await processVideo(video, setProgress);
-
-      if (poseData.frames.length === 0) {
-        toast.error("Keine Pose erkannt. Stelle sicher, dass du im Video gut sichtbar bist.");
-        setStep("upload");
-        return;
-      }
-
-      // Draw last frame pose on canvas
-      if (canvasRef.current && poseData.frames.length > 0) {
-        const lastFrame = poseData.frames[poseData.frames.length - 1];
-        drawPose(canvasRef.current, lastFrame.keypoints, video.videoWidth, video.videoHeight);
-      }
-
-      // Step 2: Calculate angles + velocities
-      const jointAngles = calculateJointAngles(poseData);
-      const velocities = calculateVelocities(poseData);
-
-      // Step 3: Send to Gemini for coaching feedback
       setStep("analysing");
+
+      const formData = new FormData();
+      formData.append("video", videoFile);
+      formData.append("strokeType", strokeType);
+      formData.append("analysisType", "einzelschlag");
 
       const res = await fetch("/api/analyse", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          poseData: {
-            ...poseData,
-            jointAngles,
-            velocities,
-          },
-          strokeType,
-          analysisType: "einzelschlag",
-        }),
+        body: formData,
       });
 
       if (!res.ok) {
@@ -134,15 +90,15 @@ export function VideoAnalyser() {
       toast.error(err instanceof Error ? err.message : "Analyse fehlgeschlagen");
       setStep("upload");
     }
-  }, [videoUrl, strokeType, consentGiven]);
+  }, [videoFile, strokeType, consentGiven]);
 
   const handleReset = useCallback(() => {
     if (videoUrl) URL.revokeObjectURL(videoUrl);
+    setVideoFile(null);
     setVideoUrl(null);
     setResult(null);
     setAnalysisId(null);
     setStep("upload");
-    setProgress(0);
     setConsentGiven(false);
     if (fileInputRef.current) fileInputRef.current.value = "";
     if (cameraInputRef.current) cameraInputRef.current.value = "";
@@ -201,16 +157,11 @@ export function VideoAnalyser() {
           ) : (
             <div className="relative rounded-xl overflow-hidden bg-black">
               <video
-                ref={videoRef}
                 src={videoUrl}
                 className="w-full max-h-[400px] object-contain"
                 controls
                 playsInline
                 preload="auto"
-              />
-              <canvas
-                ref={canvasRef}
-                className="absolute inset-0 w-full h-full pointer-events-none"
               />
             </div>
           )}
@@ -270,34 +221,19 @@ export function VideoAnalyser() {
                 className="mt-1 accent-emerald"
               />
               <span className="text-sm text-text-secondary">
-                Ich stimme zu, dass anonymisierte Bewegungsdaten (Gelenkwinkel, keine Bilder)
-                zur Analyse an Google Gemini gesendet werden.{" "}
+                Ich stimme zu, dass das Video zur Analyse an Google Gemini gesendet wird.
+                Das Video wird nicht gespeichert und nur fuer die einmalige Analyse verwendet.{" "}
                 <a href="/datenschutz" className="text-emerald hover:underline">
                   Mehr erfahren
                 </a>
               </span>
             </label>
 
-            {/* Processing State */}
-            {step === "processing" && (
-              <div className="space-y-2">
-                <div className="flex items-center gap-2 text-sm text-text-secondary">
-                  <Loader2 className="w-4 h-4 animate-spin text-emerald" />
-                  Pose-Erkennung laeuft... (lokal auf deinem Geraet)
-                </div>
-                <div className="w-full bg-white/[0.06] rounded-full h-2">
-                  <div
-                    className="bg-emerald h-2 rounded-full transition-all duration-300"
-                    style={{ width: `${progress}%` }}
-                  />
-                </div>
-              </div>
-            )}
-
+            {/* Analysing State */}
             {step === "analysing" && (
               <div className="flex items-center gap-2 text-sm text-text-secondary">
-                <Loader2 className="w-4 h-4 animate-spin text-cyan" />
-                KI analysiert deine Technik...
+                <Loader2 className="w-4 h-4 animate-spin text-emerald" />
+                KI analysiert dein Video...
               </div>
             )}
 
