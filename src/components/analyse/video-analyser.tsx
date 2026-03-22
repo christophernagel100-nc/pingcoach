@@ -85,7 +85,7 @@ export function VideoAnalyser() {
 
       if (uploadError) {
         console.error("Storage upload error:", uploadError);
-        toast.error("Video-Upload fehlgeschlagen");
+        toast.error(`Video-Upload fehlgeschlagen: ${uploadError.message}`);
         setStep("upload");
         return;
       }
