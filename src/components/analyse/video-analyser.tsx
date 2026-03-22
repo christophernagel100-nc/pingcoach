@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
 import { Upload, Video, Loader2, Camera } from "lucide-react";
+import { createClient } from "@/lib/supabase/client";
 import type { StructuredFeedback } from "@/lib/types";
 import { AnalyseResult } from "./analyse-result";
 
@@ -21,7 +22,7 @@ const STROKE_TYPES = [
   { value: "sonstiges", label: "Sonstiges / Ganzes Spiel" },
 ];
 
-type AnalyseStep = "upload" | "analysing" | "result";
+type AnalyseStep = "upload" | "uploading" | "analysing" | "result";
 
 export function VideoAnalyser() {
   const [step, setStep] = useState<AnalyseStep>("upload");
@@ -63,16 +64,44 @@ export function VideoAnalyser() {
     }
 
     try {
-      setStep("analysing");
+      const supabase = createClient();
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        toast.error("Bitte zuerst einloggen");
+        return;
+      }
 
-      const formData = new FormData();
-      formData.append("video", videoFile);
-      formData.append("strokeType", strokeType);
-      formData.append("analysisType", "einzelschlag");
+      // Step 1: Upload video to Supabase Storage
+      setStep("uploading");
+      const fileName = `${user.id}/${Date.now()}-${videoFile.name}`;
+
+      const { error: uploadError } = await supabase
+        .storage
+        .from("pc-videos")
+        .upload(fileName, videoFile, {
+          cacheControl: "300",
+          upsert: false,
+        });
+
+      if (uploadError) {
+        console.error("Storage upload error:", uploadError);
+        toast.error("Video-Upload fehlgeschlagen");
+        setStep("upload");
+        return;
+      }
+
+      // Step 2: Send storage path to API for analysis
+      setStep("analysing");
 
       const res = await fetch("/api/analyse", {
         method: "POST",
-        body: formData,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          storagePath: fileName,
+          mimeType: videoFile.type,
+          strokeType,
+          analysisType: "einzelschlag",
+        }),
       });
 
       if (!res.ok) {
@@ -229,7 +258,14 @@ export function VideoAnalyser() {
               </span>
             </label>
 
-            {/* Analysing State */}
+            {/* Upload + Analysing States */}
+            {step === "uploading" && (
+              <div className="flex items-center gap-2 text-sm text-text-secondary">
+                <Loader2 className="w-4 h-4 animate-spin text-emerald" />
+                Video wird hochgeladen...
+              </div>
+            )}
+
             {step === "analysing" && (
               <div className="flex items-center gap-2 text-sm text-text-secondary">
                 <Loader2 className="w-4 h-4 animate-spin text-emerald" />

@@ -226,3 +226,20 @@ $$ LANGUAGE plpgsql;
 CREATE TRIGGER pc_profiles_updated_at
   BEFORE UPDATE ON pc_profiles
   FOR EACH ROW EXECUTE FUNCTION public.pc_handle_updated_at();
+
+-- ============================================================
+-- STORAGE: Video-Uploads fuer Analyse (temporaer)
+-- ============================================================
+INSERT INTO storage.buckets (id, name, public) VALUES ('pc-videos', 'pc-videos', false);
+
+CREATE POLICY "Users upload own videos" ON storage.objects
+  FOR INSERT TO authenticated
+  WITH CHECK (bucket_id = 'pc-videos' AND (storage.foldername(name))[1] = auth.uid()::text);
+
+CREATE POLICY "Users read own videos" ON storage.objects
+  FOR SELECT TO authenticated
+  USING (bucket_id = 'pc-videos' AND (storage.foldername(name))[1] = auth.uid()::text);
+
+CREATE POLICY "Users delete own videos" ON storage.objects
+  FOR DELETE TO authenticated
+  USING (bucket_id = 'pc-videos' AND (storage.foldername(name))[1] = auth.uid()::text);
