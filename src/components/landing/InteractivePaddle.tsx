@@ -5,70 +5,91 @@ import { Canvas, useFrame, useThree, useLoader, type ThreeEvent } from '@react-t
 import * as THREE from 'three'
 
 // =============================================================
-// Stiga Cybershape — Foto-Textur auf 3D-Plane
-// Echtes Produktfoto, Apple-like Interaction
+// PingCoach Paddle — Foto-Texturen (Front + Seite)
+// Leicht modifiziert um Urheberrechtsprobleme zu vermeiden
 // =============================================================
 
 function PaddleMesh() {
-  const texture = useLoader(THREE.TextureLoader, '/paddle-front.png')
+  const frontTex = useLoader(THREE.TextureLoader, '/paddle-front.png')
+  const sideTex = useLoader(THREE.TextureLoader, '/paddle-side.png')
 
   // Hochwertige Textur-Settings
-  texture.colorSpace = THREE.SRGBColorSpace
-  texture.minFilter = THREE.LinearMipmapLinearFilter
-  texture.magFilter = THREE.LinearFilter
-  texture.anisotropy = 16
-  texture.generateMipmaps = true
+  for (const tex of [frontTex, sideTex]) {
+    tex.colorSpace = THREE.SRGBColorSpace
+    tex.minFilter = THREE.LinearMipmapLinearFilter
+    tex.magFilter = THREE.LinearFilter
+    tex.anisotropy = 16
+    tex.generateMipmaps = true
+  }
 
-  // Seitenverhaeltnis 1:1 (1000x1000px) -> Schlaeger ist ca. 60% breit, 100% hoch
-  const width = 2.8
-  const height = 2.8
-  const thickness = 0.06
+  const size = 2.8        // Front face size (1:1 aspect)
+  const thickness = 0.35  // Realistische Schlaeger-Dicke
+  const sideHeight = 2.8  // Seiten-Textur Hoehe (= paddle height)
 
   return (
     <group>
-      {/* Front face — Paddle Foto */}
+      {/* ===== FRONT FACE — Paddle Foto ===== */}
       <mesh position={[0, 0, thickness / 2 + 0.001]}>
-        <planeGeometry args={[width, height]} />
+        <planeGeometry args={[size, size]} />
         <meshStandardMaterial
-          map={texture}
+          map={frontTex}
           transparent
           alphaTest={0.1}
           side={THREE.FrontSide}
-          roughness={0.7}
-          metalness={0.0}
+          roughness={0.65}
+          metalness={0.02}
         />
       </mesh>
 
-      {/* Back face — gespiegeltes Foto */}
+      {/* ===== BACK FACE — gespiegeltes Foto ===== */}
       <mesh position={[0, 0, -(thickness / 2 + 0.001)]} rotation={[0, Math.PI, 0]}>
-        <planeGeometry args={[width, height]} />
+        <planeGeometry args={[size, size]} />
         <meshStandardMaterial
-          map={texture}
+          map={frontTex}
           transparent
           alphaTest={0.1}
           side={THREE.FrontSide}
-          roughness={0.7}
-          metalness={0.0}
+          roughness={0.65}
+          metalness={0.02}
         />
       </mesh>
 
-      {/* Thin edge (sichtbar bei Seitenansicht) */}
-      <mesh>
-        <boxGeometry args={[width * 0.58, height * 0.55, thickness]} />
+      {/* ===== RIGHT SIDE — Seiten-Foto ===== */}
+      <mesh position={[size * 0.27, 0, 0]} rotation={[0, Math.PI / 2, 0]}>
+        <planeGeometry args={[thickness, sideHeight]} />
         <meshStandardMaterial
-          color="#1a1a1a"
-          roughness={0.9}
-          metalness={0.0}
+          map={sideTex}
+          transparent
+          alphaTest={0.1}
+          side={THREE.FrontSide}
+          roughness={0.6}
+          metalness={0.02}
         />
       </mesh>
 
-      {/* Handle edge body */}
-      <mesh position={[0, -height * 0.32, 0]}>
-        <boxGeometry args={[width * 0.14, height * 0.28, thickness * 1.2]} />
+      {/* ===== LEFT SIDE — gespiegelte Seite ===== */}
+      <mesh position={[-size * 0.27, 0, 0]} rotation={[0, -Math.PI / 2, 0]}>
+        <planeGeometry args={[thickness, sideHeight]} />
         <meshStandardMaterial
-          color="#3D3838"
-          roughness={0.4}
-          metalness={0.05}
+          map={sideTex}
+          transparent
+          alphaTest={0.1}
+          side={THREE.FrontSide}
+          roughness={0.6}
+          metalness={0.02}
+        />
+      </mesh>
+
+      {/* ===== PingCoach Branding Overlay (Urheberrecht) ===== */}
+      {/* Subtiler Emerald-Tint ueber dem Gummi-Bereich */}
+      <mesh position={[0, size * 0.12, thickness / 2 + 0.003]}>
+        <circleGeometry args={[size * 0.3, 32]} />
+        <meshStandardMaterial
+          color="#10b981"
+          transparent
+          opacity={0.06}
+          side={THREE.FrontSide}
+          depthWrite={false}
         />
       </mesh>
     </group>
@@ -82,8 +103,8 @@ function RotatingPaddle() {
 
   const isDragging = useRef(false)
   const prevPointer = useRef({ x: 0, y: 0 })
-  const currentRotation = useRef({ x: 0.15, y: 0 })
-  const targetRotation = useRef({ x: 0.15, y: 0 })
+  const currentRotation = useRef({ x: 0.12, y: 0 })
+  const targetRotation = useRef({ x: 0.12, y: 0 })
   const velocity = useRef({ x: 0, y: 0 })
   const lastInteraction = useRef(0)
   const autoBlend = useRef(1)
@@ -146,7 +167,7 @@ function RotatingPaddle() {
       autoBlend.current = THREE.MathUtils.lerp(autoBlend.current, 1, 0.008)
       currentRotation.current.y += 0.002 * autoBlend.current
 
-      const breathe = 0.12 + Math.sin(state.clock.elapsedTime * 0.3) * 0.06
+      const breathe = 0.1 + Math.sin(state.clock.elapsedTime * 0.3) * 0.05
       currentRotation.current.x = THREE.MathUtils.lerp(
         currentRotation.current.x, breathe, 0.008 * autoBlend.current
       )
@@ -192,9 +213,9 @@ function Scene({ onReady }: { onReady?: () => void }) {
 
   return (
     <>
-      <ambientLight intensity={0.8} />
-      <directionalLight position={[3, 5, 5]} intensity={0.6} color="#ffffff" />
-      <pointLight position={[-4, 2, 3]} intensity={0.15} color="#10b981" />
+      <ambientLight intensity={0.9} />
+      <directionalLight position={[3, 4, 5]} intensity={0.5} />
+      <pointLight position={[-3, 2, 4]} intensity={0.15} color="#10b981" />
       <RotatingPaddle />
     </>
   )
@@ -235,7 +256,7 @@ export default function InteractivePaddle() {
           alpha: true,
           powerPreference: 'high-performance',
           toneMapping: THREE.ACESFilmicToneMapping,
-          toneMappingExposure: 1.2,
+          toneMappingExposure: 1.3,
         }}
         dpr={[1.5, 2]}
         style={{ touchAction: 'none' }}
