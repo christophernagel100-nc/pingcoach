@@ -41,6 +41,7 @@ export function VideoAnalyser() {
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const cameraInputRef = useRef<HTMLInputElement>(null);
 
   const handleFileSelect = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -144,6 +145,7 @@ export function VideoAnalyser() {
     setProgress(0);
     setConsentGiven(false);
     if (fileInputRef.current) fileInputRef.current.value = "";
+    if (cameraInputRef.current) cameraInputRef.current.value = "";
   }, [videoUrl]);
 
   // Result view
@@ -170,18 +172,32 @@ export function VideoAnalyser() {
         </CardHeader>
         <CardContent className="space-y-4">
           {!videoUrl ? (
-            <button
-              onClick={() => fileInputRef.current?.click()}
-              className="w-full border-2 border-dashed border-white/[0.1] rounded-xl p-12 flex flex-col items-center gap-3 hover:border-emerald/30 hover:bg-emerald/5 transition-colors cursor-pointer"
-            >
-              <Upload className="w-10 h-10 text-text-muted" />
-              <span className="text-text-secondary font-medium">
-                Video hochladen oder aufnehmen
-              </span>
-              <span className="text-text-muted text-sm">
-                MP4, MOV, WebM — max. 100 MB
-              </span>
-            </button>
+            <div className="flex flex-col sm:flex-row gap-3">
+              <button
+                onClick={() => fileInputRef.current?.click()}
+                className="flex-1 border-2 border-dashed border-white/[0.1] rounded-xl p-8 flex flex-col items-center gap-3 hover:border-emerald/30 hover:bg-emerald/5 transition-colors cursor-pointer"
+              >
+                <Upload className="w-8 h-8 text-text-muted" />
+                <span className="text-text-secondary font-medium text-sm">
+                  Video hochladen
+                </span>
+                <span className="text-text-muted text-xs">
+                  MP4, MOV, WebM — max. 100 MB
+                </span>
+              </button>
+              <button
+                onClick={() => cameraInputRef.current?.click()}
+                className="flex-1 border-2 border-dashed border-white/[0.1] rounded-xl p-8 flex flex-col items-center gap-3 hover:border-cyan/30 hover:bg-cyan/5 transition-colors cursor-pointer"
+              >
+                <Camera className="w-8 h-8 text-text-muted" />
+                <span className="text-text-secondary font-medium text-sm">
+                  Video aufnehmen
+                </span>
+                <span className="text-text-muted text-xs">
+                  Direkt mit der Kamera filmen
+                </span>
+              </button>
+            </div>
           ) : (
             <div className="relative rounded-xl overflow-hidden bg-black">
               <video
@@ -199,8 +215,17 @@ export function VideoAnalyser() {
             </div>
           )}
 
+          {/* Upload aus Galerie/Dateien */}
           <input
             ref={fileInputRef}
+            type="file"
+            accept="video/*"
+            onChange={handleFileSelect}
+            className="hidden"
+          />
+          {/* Direkt aufnehmen mit Kamera */}
+          <input
+            ref={cameraInputRef}
             type="file"
             accept="video/*"
             capture="environment"
