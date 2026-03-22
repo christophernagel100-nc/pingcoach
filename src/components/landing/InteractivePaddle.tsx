@@ -1,97 +1,199 @@
 'use client'
 
-import { useRef, useState, useEffect, useCallback, Suspense } from 'react'
+import { useRef, useState, useEffect, useCallback, useMemo, Suspense } from 'react'
 import { Canvas, useFrame, useThree, type ThreeEvent } from '@react-three/fiber'
-import { Environment, RoundedBox } from '@react-three/drei'
+import { Environment } from '@react-three/drei'
 import * as THREE from 'three'
 
-// ---------- Paddle Blade (Rounded rectangular shape) ----------
+// ---------- Cybershape Blade Geometry (Hexagonal/Octagonal) ----------
 
-function PaddleBlade() {
+function createBladeShape(): THREE.Shape {
+  const shape = new THREE.Shape()
+
+  // Stiga Cybershape: hexagonal with cut corners
+  // Proportions based on real paddle (~158mm wide, ~150mm tall blade)
+  const w = 1.4  // half width
+  const h = 1.5  // half height (top to bottom of blade)
+  const cut = 0.45 // corner cut size
+
+  // Start bottom-left where blade meets handle
+  shape.moveTo(-0.45, -h + 0.3)
+
+  // Bottom edge (narrower, connects to handle)
+  shape.lineTo(-0.55, -h + 0.6)
+
+  // Left side going up
+  shape.lineTo(-w, -h + 1.2)
+
+  // Top-left corner (cut)
+  shape.lineTo(-w, h - cut)
+  shape.lineTo(-w + cut * 0.6, h)
+
+  // Top edge
+  shape.lineTo(w - cut * 0.6, h)
+
+  // Top-right corner (cut)
+  shape.lineTo(w, h - cut)
+
+  // Right side going down
+  shape.lineTo(w, -h + 1.2)
+
+  // Bottom-right
+  shape.lineTo(0.55, -h + 0.6)
+  shape.lineTo(0.45, -h + 0.3)
+
+  shape.closePath()
+  return shape
+}
+
+// ---------- Blade Component ----------
+
+function CybershapeBlade() {
+  const bladeShape = useMemo(() => createBladeShape(), [])
+
+  const extrudeSettings = useMemo(() => ({
+    steps: 1,
+    depth: 0.07,
+    bevelEnabled: true,
+    bevelThickness: 0.01,
+    bevelSize: 0.02,
+    bevelSegments: 3,
+  }), [])
+
   return (
-    <group position={[0, 0.6, 0]}>
+    <group position={[0, 0.85, 0]}>
       {/* Wooden core */}
-      <mesh>
-        <cylinderGeometry args={[1.35, 1.35, 0.08, 64]} />
+      <mesh rotation={[Math.PI / 2, 0, 0]} position={[0, 0, 0]}>
+        <extrudeGeometry args={[bladeShape, extrudeSettings]} />
         <meshPhysicalMaterial
-          color="#8B6914"
-          roughness={0.6}
-          metalness={0.05}
-          clearcoat={0.3}
+          color="#5C4A2A"
+          roughness={0.65}
+          metalness={0.02}
+          clearcoat={0.2}
         />
       </mesh>
 
-      {/* Red rubber (front) */}
-      <mesh position={[0, 0.045, 0]}>
-        <cylinderGeometry args={[1.32, 1.32, 0.02, 64]} />
-        <meshPhysicalMaterial
-          color="#DC2626"
-          roughness={0.85}
-          metalness={0.0}
-          clearcoat={0.1}
-        />
-      </mesh>
-
-      {/* Black rubber (back) */}
-      <mesh position={[0, -0.045, 0]}>
-        <cylinderGeometry args={[1.32, 1.32, 0.02, 64]} />
+      {/* Black rubber FRONT */}
+      <mesh rotation={[Math.PI / 2, 0, 0]} position={[0, 0, -0.045]}>
+        <extrudeGeometry args={[bladeShape, {
+          steps: 1,
+          depth: 0.015,
+          bevelEnabled: false,
+        }]} />
         <meshPhysicalMaterial
           color="#1a1a1a"
-          roughness={0.9}
+          roughness={0.92}
           metalness={0.0}
-          clearcoat={0.05}
+          clearcoat={0.02}
         />
       </mesh>
 
-      {/* Edge tape (white) */}
-      <mesh>
-        <torusGeometry args={[1.335, 0.05, 8, 64]} />
+      {/* Black rubber BACK (slightly lighter for depth) */}
+      <mesh rotation={[Math.PI / 2, 0, 0]} position={[0, 0, 0.07]}>
+        <extrudeGeometry args={[bladeShape, {
+          steps: 1,
+          depth: 0.015,
+          bevelEnabled: false,
+        }]} />
         <meshPhysicalMaterial
-          color="#ffffff"
+          color="#222222"
+          roughness={0.92}
+          metalness={0.0}
+          clearcoat={0.02}
+        />
+      </mesh>
+
+      {/* Red edge strip (visible between rubber sheets) */}
+      <mesh rotation={[Math.PI / 2, 0, 0]} position={[0, 0, 0.065]}>
+        <extrudeGeometry args={[bladeShape, {
+          steps: 1,
+          depth: 0.005,
+          bevelEnabled: true,
+          bevelThickness: 0.005,
+          bevelSize: 0.005,
+          bevelSegments: 1,
+        }]} />
+        <meshPhysicalMaterial
+          color="#DC2626"
           roughness={0.5}
           metalness={0.0}
+          transparent
+          opacity={0.6}
         />
       </mesh>
     </group>
   )
 }
 
-// ---------- Handle ----------
+// ---------- Handle (Flared Stiga style with gold stripes) ----------
 
-function PaddleHandle() {
+function CybershapeHandle() {
   return (
-    <group position={[0, -1.0, 0]}>
-      {/* Main handle (flared) */}
+    <group position={[0, -0.75, 0.035]}>
+      {/* Main handle — flared shape, dark wood */}
       <mesh>
-        <cylinderGeometry args={[0.22, 0.28, 1.2, 16]} />
+        <cylinderGeometry args={[0.2, 0.28, 1.1, 6]} />
         <meshPhysicalMaterial
-          color="#5C3A0E"
-          roughness={0.5}
+          color="#3A3535"
+          roughness={0.45}
           metalness={0.05}
-          clearcoat={0.4}
+          clearcoat={0.5}
           clearcoatRoughness={0.3}
         />
       </mesh>
 
-      {/* Handle grip texture rings */}
-      {[0.3, 0.1, -0.1, -0.3].map((y, i) => (
-        <mesh key={i} position={[0, y, 0]}>
-          <torusGeometry args={[0.26, 0.015, 8, 16]} />
-          <meshPhysicalMaterial
-            color="#3D2408"
-            roughness={0.7}
-            metalness={0.0}
-          />
-        </mesh>
-      ))}
-
-      {/* Bottom cap */}
-      <mesh position={[0, -0.62, 0]}>
-        <cylinderGeometry args={[0.29, 0.26, 0.05, 16]} />
+      {/* Gold accent stripe LEFT */}
+      <mesh position={[-0.06, 0, 0.18]} rotation={[0, 0, 0]}>
+        <boxGeometry args={[0.015, 1.0, 0.01]} />
         <meshPhysicalMaterial
-          color="#3D2408"
+          color="#C4841D"
+          roughness={0.3}
+          metalness={0.6}
+          clearcoat={0.8}
+        />
+      </mesh>
+
+      {/* Gold accent stripe RIGHT */}
+      <mesh position={[0.06, 0, 0.18]} rotation={[0, 0, 0]}>
+        <boxGeometry args={[0.015, 1.0, 0.01]} />
+        <meshPhysicalMaterial
+          color="#B8860B"
+          roughness={0.3}
+          metalness={0.6}
+          clearcoat={0.8}
+        />
+      </mesh>
+
+      {/* Handle neck (where blade meets handle) */}
+      <mesh position={[0, 0.55, 0]}>
+        <cylinderGeometry args={[0.25, 0.2, 0.15, 6]} />
+        <meshPhysicalMaterial
+          color="#3A3535"
+          roughness={0.45}
+          metalness={0.05}
+          clearcoat={0.5}
+        />
+      </mesh>
+
+      {/* Bottom endcap */}
+      <mesh position={[0, -0.58, 0]}>
+        <cylinderGeometry args={[0.29, 0.27, 0.06, 6]} />
+        <meshPhysicalMaterial
+          color="#2A2525"
           roughness={0.4}
-          metalness={0.1}
+          metalness={0.08}
+          clearcoat={0.6}
+        />
+      </mesh>
+
+      {/* Stiga badge area (small blue rectangle) */}
+      <mesh position={[0, -0.15, 0.22]} rotation={[0, 0, 0]}>
+        <boxGeometry args={[0.12, 0.15, 0.005]} />
+        <meshPhysicalMaterial
+          color="#1e3a5f"
+          roughness={0.3}
+          metalness={0.2}
+          clearcoat={0.9}
         />
       </mesh>
     </group>
@@ -105,7 +207,7 @@ function RotatingPaddle() {
 
   const isDragging = useRef(false)
   const prevPointer = useRef({ x: 0, y: 0 })
-  const targetRotation = useRef({ x: 0.3, y: 0 })
+  const targetRotation = useRef({ x: 0.2, y: 0 })
   const velocity = useRef({ x: 0, y: 0 })
   const lastInteractionTime = useRef(0)
   const autoRotationBlend = useRef(1)
@@ -186,15 +288,16 @@ function RotatingPaddle() {
         1,
         0.01
       )
-      const speed = 0.004 * autoRotationBlend.current
+      // Slow elegant rotation
+      const speed = 0.003 * autoRotationBlend.current
       groupRef.current.rotation.y += speed
 
-      // Gentle tilt oscillation
-      const targetX = 0.3 + Math.sin(state.clock.elapsedTime * 0.5) * 0.15
+      // Gentle tilt
+      const targetX = 0.15 + Math.sin(state.clock.elapsedTime * 0.4) * 0.1
       groupRef.current.rotation.x = THREE.MathUtils.lerp(
         groupRef.current.rotation.x,
         targetX,
-        0.015 * autoRotationBlend.current
+        0.012 * autoRotationBlend.current
       )
     }
   })
@@ -202,7 +305,7 @@ function RotatingPaddle() {
   return (
     <group
       ref={groupRef}
-      rotation={[0.3, 0, 0.1]}
+      rotation={[0.15, 0.3, 0.05]}
       onPointerDown={handlePointerDown}
       onPointerMove={handlePointerMove}
       onPointerUp={handlePointerUp}
@@ -213,8 +316,8 @@ function RotatingPaddle() {
         }
       }}
     >
-      <PaddleBlade />
-      <PaddleHandle />
+      <CybershapeBlade />
+      <CybershapeHandle />
     </group>
   )
 }
@@ -237,15 +340,24 @@ function Scene({ onReady }: { onReady?: () => void }) {
 
   return (
     <>
-      <ambientLight intensity={0.5} />
-      <hemisphereLight args={['#0a0a12', '#10b981', 0.3]} />
-      <pointLight position={[10, 10, 10]} intensity={0.8} color="#ffffff" />
-      <pointLight position={[-8, -5, -8]} intensity={0.3} color="#10b981" />
+      <ambientLight intensity={0.6} />
+      <hemisphereLight args={['#1a1a2e', '#10b981', 0.25]} />
+
+      {/* Main key light */}
+      <directionalLight position={[5, 8, 5]} intensity={1.0} color="#ffffff" />
+
+      {/* Fill light (subtle emerald tint) */}
+      <pointLight position={[-5, 3, -5]} intensity={0.3} color="#10b981" />
+
+      {/* Rim light for edge definition */}
+      <pointLight position={[0, -3, 8]} intensity={0.4} color="#ffffff" />
+
+      {/* Subtle top accent */}
       <spotLight
-        position={[5, 8, 5]}
-        angle={0.3}
+        position={[3, 10, 3]}
+        angle={0.4}
         penumbra={1}
-        intensity={0.6}
+        intensity={0.5}
         color="#06b6d4"
       />
 
@@ -277,7 +389,6 @@ export default function InteractivePaddle() {
 
   return (
     <div
-      className="interactive-paddle-container"
       style={{
         width: '100%',
         height: '100%',
@@ -288,7 +399,7 @@ export default function InteractivePaddle() {
       }}
     >
       <Canvas
-        camera={{ position: [0, 0.5, 6], fov: 45 }}
+        camera={{ position: [0, 0.5, 5.5], fov: 45 }}
         gl={{
           antialias: true,
           alpha: true,
