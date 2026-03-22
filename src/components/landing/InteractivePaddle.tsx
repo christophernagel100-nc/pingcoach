@@ -5,319 +5,316 @@ import { Canvas, useFrame, useThree, type ThreeEvent } from '@react-three/fiber'
 import { Environment } from '@react-three/drei'
 import * as THREE from 'three'
 
-// ---------- Cybershape Blade Geometry (Hexagonal/Octagonal) ----------
+// =============================================================
+// Stiga Cybershape — 1:1 Nachbau
+// Proportionen basierend auf echtem Schlaeger (158x154mm Blade)
+// =============================================================
 
-function createBladeShape(): THREE.Shape {
+function createCybershapeOutline(scale = 1): THREE.Shape {
+  const s = scale
   const shape = new THREE.Shape()
 
-  // Stiga Cybershape: hexagonal with cut corners
-  // Proportions based on real paddle (~158mm wide, ~150mm tall blade)
-  const w = 1.4  // half width
-  const h = 1.5  // half height (top to bottom of blade)
-  const cut = 0.45 // corner cut size
+  // Cybershape: Abgerundetes Sechseck, breiter oben, schmaler unten
+  // Punkte im Uhrzeigersinn, Start unten-mitte (wo Handle ansetzt)
+  // Reale Proportionen: ~158mm breit, ~154mm hoch (Blade only)
 
-  // Start bottom-left where blade meets handle
-  shape.moveTo(-0.45, -h + 0.3)
+  // Unten Mitte → rechts unten
+  shape.moveTo(-0.42 * s, -1.35 * s)
+  shape.lineTo(0.42 * s, -1.35 * s)
 
-  // Bottom edge (narrower, connects to handle)
-  shape.lineTo(-0.55, -h + 0.6)
+  // Rechts unten → rechts mitte (leicht nach aussen)
+  shape.lineTo(1.15 * s, -0.5 * s)
 
-  // Left side going up
-  shape.lineTo(-w, -h + 1.2)
+  // Rechts mitte → rechts oben
+  shape.lineTo(1.35 * s, 0.3 * s)
 
-  // Top-left corner (cut)
-  shape.lineTo(-w, h - cut)
-  shape.lineTo(-w + cut * 0.6, h)
+  // Rechts oben → oben rechts (abgeschraegt)
+  shape.lineTo(1.05 * s, 1.15 * s)
 
-  // Top edge
-  shape.lineTo(w - cut * 0.6, h)
+  // Oben rechts → oben links
+  shape.lineTo(-1.05 * s, 1.15 * s)
 
-  // Top-right corner (cut)
-  shape.lineTo(w, h - cut)
+  // Oben links → links oben
+  shape.lineTo(-1.35 * s, 0.3 * s)
 
-  // Right side going down
-  shape.lineTo(w, -h + 1.2)
+  // Links oben → links mitte
+  shape.lineTo(-1.15 * s, -0.5 * s)
 
-  // Bottom-right
-  shape.lineTo(0.55, -h + 0.6)
-  shape.lineTo(0.45, -h + 0.3)
+  // Links mitte → links unten
+  shape.lineTo(-0.42 * s, -1.35 * s)
 
-  shape.closePath()
   return shape
 }
 
-// ---------- Blade Component ----------
+function createHandleShape(): THREE.Shape {
+  const shape = new THREE.Shape()
 
-function CybershapeBlade() {
-  const bladeShape = useMemo(() => createBladeShape(), [])
+  // Flared handle Querschnitt (breiter unten, schmaler oben)
+  shape.moveTo(-0.18, -0.15)
+  shape.quadraticCurveTo(-0.2, 0, -0.18, 0.15)
+  shape.lineTo(0.18, 0.15)
+  shape.quadraticCurveTo(0.2, 0, 0.18, -0.15)
+  shape.closePath()
 
-  const extrudeSettings = useMemo(() => ({
-    steps: 1,
-    depth: 0.07,
-    bevelEnabled: true,
-    bevelThickness: 0.01,
-    bevelSize: 0.02,
-    bevelSegments: 3,
-  }), [])
+  return shape
+}
+
+// ---------- Complete Paddle ----------
+
+function CybershapePaddle() {
+  const bladeOutline = useMemo(() => createCybershapeOutline(1), [])
+
+  // Blade total thickness: ~6mm wood + 2mm rubber each side = ~10mm
+  const woodThickness = 0.06
+  const rubberThickness = 0.02
+  const totalHalf = (woodThickness + rubberThickness * 2) / 2
 
   return (
-    <group position={[0, 0.85, 0]}>
-      {/* Wooden core */}
-      <mesh rotation={[Math.PI / 2, 0, 0]} position={[0, 0, 0]}>
-        <extrudeGeometry args={[bladeShape, extrudeSettings]} />
-        <meshPhysicalMaterial
-          color="#5C4A2A"
-          roughness={0.65}
-          metalness={0.02}
-          clearcoat={0.2}
-        />
-      </mesh>
+    <group>
+      {/* ============ BLADE ============ */}
+      <group position={[0, 0.55, 0]}>
 
-      {/* Black rubber FRONT */}
-      <mesh rotation={[Math.PI / 2, 0, 0]} position={[0, 0, -0.045]}>
-        <extrudeGeometry args={[bladeShape, {
-          steps: 1,
-          depth: 0.015,
-          bevelEnabled: false,
-        }]} />
-        <meshPhysicalMaterial
-          color="#1a1a1a"
-          roughness={0.92}
-          metalness={0.0}
-          clearcoat={0.02}
-        />
-      </mesh>
+        {/* Wood core */}
+        <mesh>
+          <extrudeGeometry args={[bladeOutline, {
+            depth: woodThickness,
+            bevelEnabled: true,
+            bevelThickness: 0.008,
+            bevelSize: 0.01,
+            bevelSegments: 2,
+          }]} />
+          <meshPhysicalMaterial
+            color="#6B5230"
+            roughness={0.55}
+            metalness={0.02}
+            clearcoat={0.15}
+          />
+        </mesh>
 
-      {/* Black rubber BACK (slightly lighter for depth) */}
-      <mesh rotation={[Math.PI / 2, 0, 0]} position={[0, 0, 0.07]}>
-        <extrudeGeometry args={[bladeShape, {
-          steps: 1,
-          depth: 0.015,
-          bevelEnabled: false,
-        }]} />
-        <meshPhysicalMaterial
-          color="#222222"
-          roughness={0.92}
-          metalness={0.0}
-          clearcoat={0.02}
-        />
-      </mesh>
+        {/* Front rubber (black) */}
+        <mesh position={[0, 0, -rubberThickness]}>
+          <extrudeGeometry args={[createCybershapeOutline(0.97), {
+            depth: rubberThickness,
+            bevelEnabled: false,
+          }]} />
+          <meshPhysicalMaterial
+            color="#111111"
+            roughness={0.95}
+            metalness={0.0}
+          />
+        </mesh>
 
-      {/* Red edge strip (visible between rubber sheets) */}
-      <mesh rotation={[Math.PI / 2, 0, 0]} position={[0, 0, 0.065]}>
-        <extrudeGeometry args={[bladeShape, {
-          steps: 1,
-          depth: 0.005,
-          bevelEnabled: true,
-          bevelThickness: 0.005,
-          bevelSize: 0.005,
-          bevelSegments: 1,
-        }]} />
-        <meshPhysicalMaterial
-          color="#DC2626"
-          roughness={0.5}
-          metalness={0.0}
-          transparent
-          opacity={0.6}
-        />
-      </mesh>
+        {/* Back rubber (very dark grey) */}
+        <mesh position={[0, 0, woodThickness]}>
+          <extrudeGeometry args={[createCybershapeOutline(0.97), {
+            depth: rubberThickness,
+            bevelEnabled: false,
+          }]} />
+          <meshPhysicalMaterial
+            color="#1a1a1a"
+            roughness={0.95}
+            metalness={0.0}
+          />
+        </mesh>
+
+        {/* Red edge tape (thin strip around the blade edge) */}
+        <mesh position={[0, 0, woodThickness + rubberThickness]}>
+          <extrudeGeometry args={[bladeOutline, {
+            depth: 0.003,
+            bevelEnabled: false,
+          }]} />
+          <meshPhysicalMaterial
+            color="#CC1111"
+            roughness={0.5}
+            metalness={0.0}
+            transparent
+            opacity={0.35}
+          />
+        </mesh>
+      </group>
+
+      {/* ============ HANDLE ============ */}
+      <group position={[0, -0.25, woodThickness / 2]}>
+
+        {/* Main handle shaft */}
+        <mesh rotation={[0, 0, 0]}>
+          <cylinderGeometry args={[
+            0.16,  // top radius (narrower where meets blade)
+            0.22,  // bottom radius (flared)
+            1.1,   // length
+            8,     // radial segments
+          ]} />
+          <meshPhysicalMaterial
+            color="#3D3838"
+            roughness={0.4}
+            metalness={0.03}
+            clearcoat={0.6}
+            clearcoatRoughness={0.25}
+          />
+        </mesh>
+
+        {/* Gold stripe left */}
+        <mesh position={[-0.05, 0.05, 0.155]} rotation={[0, 0, 0]}>
+          <boxGeometry args={[0.012, 0.95, 0.006]} />
+          <meshPhysicalMaterial
+            color="#C4841D"
+            roughness={0.25}
+            metalness={0.7}
+            clearcoat={0.9}
+          />
+        </mesh>
+
+        {/* Gold stripe right */}
+        <mesh position={[0.05, 0.05, 0.155]} rotation={[0, 0, 0]}>
+          <boxGeometry args={[0.012, 0.95, 0.006]} />
+          <meshPhysicalMaterial
+            color="#A06B15"
+            roughness={0.25}
+            metalness={0.7}
+            clearcoat={0.9}
+          />
+        </mesh>
+
+        {/* Handle-blade junction (smooth transition piece) */}
+        <mesh position={[0, 0.55, 0]}>
+          <cylinderGeometry args={[0.18, 0.16, 0.12, 8]} />
+          <meshPhysicalMaterial
+            color="#3D3838"
+            roughness={0.4}
+            metalness={0.03}
+            clearcoat={0.6}
+          />
+        </mesh>
+
+        {/* Bottom endcap */}
+        <mesh position={[0, -0.57, 0]}>
+          <cylinderGeometry args={[0.23, 0.21, 0.04, 8]} />
+          <meshPhysicalMaterial
+            color="#2D2828"
+            roughness={0.35}
+            metalness={0.05}
+            clearcoat={0.7}
+          />
+        </mesh>
+
+        {/* Blue Stiga badge */}
+        <mesh position={[0, -0.15, 0.18]} rotation={[0, 0, 0]}>
+          <boxGeometry args={[0.1, 0.13, 0.004]} />
+          <meshPhysicalMaterial
+            color="#1a3a6a"
+            roughness={0.25}
+            metalness={0.15}
+            clearcoat={0.9}
+          />
+        </mesh>
+      </group>
     </group>
   )
 }
 
-// ---------- Handle (Flared Stiga style with gold stripes) ----------
-
-function CybershapeHandle() {
-  return (
-    <group position={[0, -0.75, 0.035]}>
-      {/* Main handle — flared shape, dark wood */}
-      <mesh>
-        <cylinderGeometry args={[0.2, 0.28, 1.1, 6]} />
-        <meshPhysicalMaterial
-          color="#3A3535"
-          roughness={0.45}
-          metalness={0.05}
-          clearcoat={0.5}
-          clearcoatRoughness={0.3}
-        />
-      </mesh>
-
-      {/* Gold accent stripe LEFT */}
-      <mesh position={[-0.06, 0, 0.18]} rotation={[0, 0, 0]}>
-        <boxGeometry args={[0.015, 1.0, 0.01]} />
-        <meshPhysicalMaterial
-          color="#C4841D"
-          roughness={0.3}
-          metalness={0.6}
-          clearcoat={0.8}
-        />
-      </mesh>
-
-      {/* Gold accent stripe RIGHT */}
-      <mesh position={[0.06, 0, 0.18]} rotation={[0, 0, 0]}>
-        <boxGeometry args={[0.015, 1.0, 0.01]} />
-        <meshPhysicalMaterial
-          color="#B8860B"
-          roughness={0.3}
-          metalness={0.6}
-          clearcoat={0.8}
-        />
-      </mesh>
-
-      {/* Handle neck (where blade meets handle) */}
-      <mesh position={[0, 0.55, 0]}>
-        <cylinderGeometry args={[0.25, 0.2, 0.15, 6]} />
-        <meshPhysicalMaterial
-          color="#3A3535"
-          roughness={0.45}
-          metalness={0.05}
-          clearcoat={0.5}
-        />
-      </mesh>
-
-      {/* Bottom endcap */}
-      <mesh position={[0, -0.58, 0]}>
-        <cylinderGeometry args={[0.29, 0.27, 0.06, 6]} />
-        <meshPhysicalMaterial
-          color="#2A2525"
-          roughness={0.4}
-          metalness={0.08}
-          clearcoat={0.6}
-        />
-      </mesh>
-
-      {/* Stiga badge area (small blue rectangle) */}
-      <mesh position={[0, -0.15, 0.22]} rotation={[0, 0, 0]}>
-        <boxGeometry args={[0.12, 0.15, 0.005]} />
-        <meshPhysicalMaterial
-          color="#1e3a5f"
-          roughness={0.3}
-          metalness={0.2}
-          clearcoat={0.9}
-        />
-      </mesh>
-    </group>
-  )
-}
-
-// ---------- Rotating Paddle with drag interaction ----------
+// ---------- Interaction: Apple-like smooth rotation ----------
 
 function RotatingPaddle() {
   const groupRef = useRef<THREE.Group>(null)
 
   const isDragging = useRef(false)
   const prevPointer = useRef({ x: 0, y: 0 })
-  const targetRotation = useRef({ x: 0.2, y: 0 })
+  const currentRotation = useRef({ x: 0.2, y: 0.4 })
+  const targetRotation = useRef({ x: 0.2, y: 0.4 })
   const velocity = useRef({ x: 0, y: 0 })
   const lastInteractionTime = useRef(0)
-  const autoRotationBlend = useRef(1)
+  const autoBlend = useRef(1)
 
   const { gl } = useThree()
 
-  const handlePointerDown = (e: ThreeEvent<PointerEvent>) => {
+  const handlePointerDown = useCallback((e: ThreeEvent<PointerEvent>) => {
     e.stopPropagation()
     isDragging.current = true
     prevPointer.current = { x: e.clientX, y: e.clientY }
     velocity.current = { x: 0, y: 0 }
-    autoRotationBlend.current = 0
+    autoBlend.current = 0
     lastInteractionTime.current = Date.now()
-
-    if (groupRef.current) {
-      targetRotation.current = {
-        x: groupRef.current.rotation.x,
-        y: groupRef.current.rotation.y,
-      }
-    }
-
+    targetRotation.current = { ...currentRotation.current }
     gl.domElement.style.cursor = 'grabbing'
-  }
+  }, [gl])
 
-  const handlePointerMove = (e: ThreeEvent<PointerEvent>) => {
+  const handlePointerMove = useCallback((e: ThreeEvent<PointerEvent>) => {
     if (!isDragging.current) return
 
-    const deltaX = e.clientX - prevPointer.current.x
-    const deltaY = e.clientY - prevPointer.current.y
+    const dx = e.clientX - prevPointer.current.x
+    const dy = e.clientY - prevPointer.current.y
+    const sens = 0.006
 
-    const sensitivity = 0.008
-    targetRotation.current.x += deltaY * sensitivity
-    targetRotation.current.y += deltaX * sensitivity
+    targetRotation.current.y += dx * sens
+    targetRotation.current.x += dy * sens
 
-    velocity.current = {
-      x: velocity.current.x * 0.5 + deltaY * sensitivity * 0.5,
-      y: velocity.current.y * 0.5 + deltaX * sensitivity * 0.5,
-    }
+    // Smooth velocity tracking for momentum
+    velocity.current.x = velocity.current.x * 0.6 + dy * sens * 0.4
+    velocity.current.y = velocity.current.y * 0.6 + dx * sens * 0.4
 
     prevPointer.current = { x: e.clientX, y: e.clientY }
     lastInteractionTime.current = Date.now()
-  }
+  }, [])
 
-  const handlePointerUp = () => {
+  const handlePointerUp = useCallback(() => {
     isDragging.current = false
     lastInteractionTime.current = Date.now()
     gl.domElement.style.cursor = 'grab'
-  }
+  }, [gl])
 
   useFrame((state) => {
     if (!groupRef.current) return
 
-    const timeSinceInteraction = Date.now() - lastInteractionTime.current
-    const isIdle = timeSinceInteraction > 2500
+    const idle = Date.now() - lastInteractionTime.current > 2000
 
     if (isDragging.current) {
-      groupRef.current.rotation.x = THREE.MathUtils.lerp(
-        groupRef.current.rotation.x,
-        targetRotation.current.x,
-        0.25
+      // Apple-like: smooth spring follow (lerp factor 0.12 = silky)
+      currentRotation.current.x = THREE.MathUtils.lerp(
+        currentRotation.current.x, targetRotation.current.x, 0.12
       )
-      groupRef.current.rotation.y = THREE.MathUtils.lerp(
-        groupRef.current.rotation.y,
-        targetRotation.current.y,
-        0.25
+      currentRotation.current.y = THREE.MathUtils.lerp(
+        currentRotation.current.y, targetRotation.current.y, 0.12
       )
     } else if (
-      Math.abs(velocity.current.x) > 0.0001 ||
-      Math.abs(velocity.current.y) > 0.0001
+      Math.abs(velocity.current.x) > 0.00005 ||
+      Math.abs(velocity.current.y) > 0.00005
     ) {
-      groupRef.current.rotation.y += velocity.current.y
-      groupRef.current.rotation.x += velocity.current.x
-      velocity.current.x *= 0.95
-      velocity.current.y *= 0.95
-    } else if (isIdle) {
-      autoRotationBlend.current = THREE.MathUtils.lerp(
-        autoRotationBlend.current,
-        1,
-        0.01
-      )
-      // Slow elegant rotation
-      const speed = 0.003 * autoRotationBlend.current
-      groupRef.current.rotation.y += speed
+      // Momentum: decelerate smoothly
+      currentRotation.current.x += velocity.current.x
+      currentRotation.current.y += velocity.current.y
+      velocity.current.x *= 0.965
+      velocity.current.y *= 0.965
+    } else if (idle) {
+      // Auto-rotate: gentle, premium feel
+      autoBlend.current = THREE.MathUtils.lerp(autoBlend.current, 1, 0.008)
+      const speed = 0.002 * autoBlend.current
 
-      // Gentle tilt
-      const targetX = 0.15 + Math.sin(state.clock.elapsedTime * 0.4) * 0.1
-      groupRef.current.rotation.x = THREE.MathUtils.lerp(
-        groupRef.current.rotation.x,
-        targetX,
-        0.012 * autoRotationBlend.current
+      currentRotation.current.y += speed
+
+      const breathe = 0.15 + Math.sin(state.clock.elapsedTime * 0.3) * 0.08
+      currentRotation.current.x = THREE.MathUtils.lerp(
+        currentRotation.current.x, breathe, 0.008 * autoBlend.current
       )
     }
+
+    groupRef.current.rotation.x = currentRotation.current.x
+    groupRef.current.rotation.y = currentRotation.current.y
   })
 
   return (
     <group
       ref={groupRef}
-      rotation={[0.15, 0.3, 0.05]}
       onPointerDown={handlePointerDown}
       onPointerMove={handlePointerMove}
       onPointerUp={handlePointerUp}
-      onPointerOut={() => {
+      onPointerLeave={() => {
         if (isDragging.current) {
           isDragging.current = false
           gl.domElement.style.cursor = 'grab'
         }
       }}
     >
-      <CybershapeBlade />
-      <CybershapeHandle />
+      <CybershapePaddle />
     </group>
   )
 }
@@ -331,7 +328,7 @@ function Scene({ onReady }: { onReady?: () => void }) {
   useFrame(() => {
     if (!reported.current) {
       frameCount.current++
-      if (frameCount.current >= 2) {
+      if (frameCount.current >= 3) {
         reported.current = true
         onReady?.()
       }
@@ -340,43 +337,45 @@ function Scene({ onReady }: { onReady?: () => void }) {
 
   return (
     <>
-      <ambientLight intensity={0.6} />
-      <hemisphereLight args={['#1a1a2e', '#10b981', 0.25]} />
+      {/* Soft ambient */}
+      <ambientLight intensity={0.4} />
 
-      {/* Main key light */}
-      <directionalLight position={[5, 8, 5]} intensity={1.0} color="#ffffff" />
+      {/* Key light: strong white from upper right */}
+      <directionalLight
+        position={[4, 6, 5]}
+        intensity={1.2}
+        color="#ffffff"
+        castShadow={false}
+      />
 
-      {/* Fill light (subtle emerald tint) */}
-      <pointLight position={[-5, 3, -5]} intensity={0.3} color="#10b981" />
+      {/* Fill: subtle emerald tint from left */}
+      <pointLight position={[-6, 2, 3]} intensity={0.25} color="#10b981" />
 
-      {/* Rim light for edge definition */}
-      <pointLight position={[0, -3, 8]} intensity={0.4} color="#ffffff" />
+      {/* Rim light: defines edges from behind */}
+      <pointLight position={[0, 0, -6]} intensity={0.4} color="#e0e0e0" />
 
-      {/* Subtle top accent */}
+      {/* Top accent */}
       <spotLight
-        position={[3, 10, 3]}
-        angle={0.4}
+        position={[0, 8, 2]}
+        angle={0.5}
         penumbra={1}
-        intensity={0.5}
+        intensity={0.3}
         color="#06b6d4"
       />
 
-      <Environment preset="night" />
+      <Environment preset="apartment" environmentIntensity={0.3} />
       <RotatingPaddle />
     </>
   )
 }
 
-// ---------- Exported component ----------
+// ---------- Export ----------
 
 export default function InteractivePaddle() {
   const [isClient, setIsClient] = useState(false)
   const [isReady, setIsReady] = useState(false)
 
-  useEffect(() => {
-    setIsClient(true)
-  }, [])
-
+  useEffect(() => setIsClient(true), [])
   const handleReady = useCallback(() => setIsReady(true), [])
 
   if (!isClient) {
@@ -393,17 +392,19 @@ export default function InteractivePaddle() {
         width: '100%',
         height: '100%',
         opacity: isReady ? 1 : 0,
-        transition: 'opacity 0.6s ease-out',
+        transition: 'opacity 0.8s ease-out',
         touchAction: 'none',
         cursor: 'grab',
       }}
     >
       <Canvas
-        camera={{ position: [0, 0.5, 5.5], fov: 45 }}
+        camera={{ position: [0, 0.3, 4.5], fov: 40 }}
         gl={{
           antialias: true,
           alpha: true,
           powerPreference: 'high-performance',
+          toneMapping: THREE.ACESFilmicToneMapping,
+          toneMappingExposure: 1.1,
         }}
         dpr={[1.5, 2]}
         style={{ touchAction: 'none' }}
