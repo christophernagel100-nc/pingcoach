@@ -3,6 +3,9 @@ import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
 import { analyseWithGemini } from "@/lib/gemini";
 
+// Vercel Hobby: max 60s, brauchen wir fuer Storage-Download + Gemini
+export const maxDuration = 60;
+
 const analyseSchema = z.object({
   storagePath: z.string().min(1),
   mimeType: z.string().startsWith("video/"),
@@ -42,6 +45,7 @@ export async function POST(req: NextRequest) {
       .single();
 
     // Download video from Supabase Storage
+    console.log("[Analyse] Downloading from Storage:", parsed.data.storagePath);
     const { data: videoData, error: downloadError } = await supabase
       .storage
       .from("pc-videos")
@@ -53,6 +57,7 @@ export async function POST(req: NextRequest) {
     }
 
     const videoBuffer = Buffer.from(await videoData.arrayBuffer());
+    console.log("[Analyse] Video downloaded, size:", videoBuffer.length, "bytes. Sending to Gemini...");
 
     // Send to Gemini for analysis
     const aiResult = await analyseWithGemini({
@@ -94,7 +99,8 @@ export async function POST(req: NextRequest) {
       feedback: aiResult,
     });
   } catch (error) {
-    console.error("[Analyse Error]:", error);
-    return NextResponse.json({ error: "Analyse fehlgeschlagen" }, { status: 500 });
+    const message = error instanceof Error ? error.message : String(error);
+    console.error("[Analyse Error]:", message);
+    return NextResponse.json({ error: `Analyse fehlgeschlagen: ${message}` }, { status: 500 });
   }
 }
