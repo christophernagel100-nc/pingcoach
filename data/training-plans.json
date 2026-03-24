@@ -1,0 +1,143 @@
+[
+  {
+    "id": "plan-anfaenger-8w",
+    "name": "Anfaenger-Plan: Grundlagen aufbauen",
+    "level": "anfaenger",
+    "description": "Dieser 8-Wochen-Plan vermittelt die wichtigsten Grundschlaege und Beinarbeit fuer Einsteiger. Ziel ist eine solide Basis aus Vorhand, Rueckhand, Schupf und einfacher Beinarbeit, auf der spaeter aufgebaut werden kann.",
+    "duration_weeks": 8,
+    "sessions_per_week": 2,
+    "weekly_schedule": [
+      {
+        "day": "Dienstag",
+        "focus": "Vorhand + Beinarbeit",
+        "drill_ids": [
+          "drill-vh-topspin-01",
+          "drill-vh-konter-topspin-02",
+          "drill-beinarbeit-sidestep-12"
+        ],
+        "duration_minutes": 60,
+        "notes": "15 Min Einschlagen, 20 Min Vorhand Topspin Uebungen, 15 Min Beinarbeit Sidesteps, 10 Min freies Spiel"
+      },
+      {
+        "day": "Donnerstag",
+        "focus": "Rueckhand + Schupf",
+        "drill_ids": [
+          "drill-rh-topspin-04",
+          "drill-rh-block-05",
+          "drill-rueckschlag-schupf-10"
+        ],
+        "duration_minutes": 60,
+        "notes": "15 Min Einschlagen, 15 Min Rueckhand Topspin, 15 Min Block-Uebungen, 15 Min Schupf-Uebungen"
+      }
+    ],
+    "progression_notes": "Woche 1-3: Fokus auf saubere Schlagbewegung und Ballgefuehl. Woche 4-5: Tempo und Platzierung schrittweise erhoehen. Woche 6-8: Einfache Kombinationen (Schupf + Topspin-Eroeffnung) einbauen. Wenn ein Schlag noch nicht sitzt, lieber eine Woche laenger daran arbeiten statt weiterzugehen."
+  },
+  {
+    "id": "plan-fortgeschritten-8w",
+    "name": "Fortgeschrittenen-Plan: Angriffsspiel entwickeln",
+    "level": "fortgeschritten",
+    "description": "Fuer Spieler, die Grundschlaege beherrschen und ihr Spiel auf die naechste Stufe bringen wollen. Schwerpunkte sind aktives Topspin-Spiel, Aufschlag-Variation, Rueckschlag-Strategien und taktische Muster wie der dritte Ball.",
+    "duration_weeks": 8,
+    "sessions_per_week": 3,
+    "weekly_schedule": [
+      {
+        "day": "Montag",
+        "focus": "Topspin beidseitig + Eroeffnung",
+        "drill_ids": [
+          "drill-vh-topspin-01",
+          "drill-rh-topspin-04",
+          "drill-vh-eroeffnung-03"
+        ],
+        "duration_minutes": 75,
+        "notes": "10 Min Einschlagen, 20 Min VH Topspin Variation (cross/longline), 20 Min RH Topspin, 15 Min Eroeffnung gegen Unterschnitt, 10 Min freies Spiel"
+      },
+      {
+        "day": "Mittwoch",
+        "focus": "Aufschlag + Rueckschlag + Dritter Ball",
+        "drill_ids": [
+          "drill-aufschlag-kurz-us-07",
+          "drill-aufschlag-lang-ts-08",
+          "drill-aufschlag-seitschnitt-09",
+          "drill-rueckschlag-schupf-10",
+          "drill-rueckschlag-flip-lang-11",
+          "drill-taktik-dritter-ball-16"
+        ],
+        "duration_minutes": 75,
+        "notes": "10 Min Einschlagen, 20 Min Aufschlag-Training (kurz/lang/seitschnitt), 20 Min Rueckschlag-Uebungen, 15 Min Dritter-Ball-Taktik, 10 Min Matchplay"
+      },
+      {
+        "day": "Freitag",
+        "focus": "Beinarbeit + Spielmuster",
+        "drill_ids": [
+          "drill-beinarbeit-sidestep-12",
+          "drill-beinarbeit-1-2-schritt-13",
+          "drill-beinarbeit-falkenberg-14",
+          "drill-taktik-platzierung-15"
+        ],
+        "duration_minutes": 75,
+        "notes": "10 Min Einschlagen, 15 Min Sidesteps + Umstellung, 15 Min Falkenberg, 20 Min Platzierungs-Uebungen, 15 Min Matchplay mit Aufgaben"
+      }
+    ],
+    "progression_notes": "Woche 1-2: Einzeltechniken festigen, Konsistenz aufbauen. Woche 3-4: Kombinationen verknuepfen (Aufschlag + dritter Ball). Woche 5-6: Taktische Muster unter leichtem Druck trainieren. Woche 7-8: Volle Matchsimulation mit Fokusaufgaben. Regelmaessig Spiele gegen verschiedene Spielertypen einplanen."
+  },
+  {
+    "id": "plan-vereinsspieler-8w",
+    "name": "Vereinsspieler-Plan: Wettkampfvorbereitung",
+    "level": "vereinsspieler",
+    "description": "Intensiver Plan fuer Vereinsspieler, die sich auf Medenspiele und Turniere vorbereiten. Kombiniert technisches Training mit taktischer Matchvorbereitung, Konditionsarbeit und Drucksituationen im Training.",
+    "duration_weeks": 8,
+    "sessions_per_week": 4,
+    "weekly_schedule": [
+      {
+        "day": "Montag",
+        "focus": "Topspin-Angriff + Eroeffnung",
+        "drill_ids": [
+          "drill-vh-topspin-01",
+          "drill-vh-eroeffnung-03",
+          "drill-rh-topspin-04",
+          "drill-rh-banana-flip-06"
+        ],
+        "duration_minutes": 90,
+        "notes": "10 Min Einschlagen, 25 Min VH Topspin (alle Variationen), 20 Min RH Topspin + Flip, 20 Min Eroeffnung gegen verschiedene Unterschnitt-Varianten, 15 Min freies Spiel mit Fokus"
+      },
+      {
+        "day": "Mittwoch",
+        "focus": "Aufschlag + Taktik + Dritter Ball",
+        "drill_ids": [
+          "drill-aufschlag-kurz-us-07",
+          "drill-aufschlag-lang-ts-08",
+          "drill-aufschlag-seitschnitt-09",
+          "drill-taktik-dritter-ball-16",
+          "drill-taktik-platzierung-15"
+        ],
+        "duration_minutes": 90,
+        "notes": "10 Min Einschlagen, 20 Min Aufschlag-Serien (Zielfelder markieren), 20 Min Dritter-Ball-Szenarien, 20 Min Platzierungs-Taktik, 20 Min Matchplay mit Aufschlag-Fokus"
+      },
+      {
+        "day": "Freitag",
+        "focus": "Beinarbeit + Matchsimulation",
+        "drill_ids": [
+          "drill-beinarbeit-falkenberg-14",
+          "drill-beinarbeit-1-2-schritt-13",
+          "drill-allgemein-multiball-19",
+          "drill-allgemein-balleimer-20"
+        ],
+        "duration_minutes": 90,
+        "notes": "10 Min Einschlagen, 15 Min Falkenberg (hohe Intensitaet), 15 Min Umstellungs-Uebungen, 20 Min Multiball/Balleimer, 30 Min Matchplay unter Wettkampfbedingungen (Saetze, Seitenwechsel)"
+      },
+      {
+        "day": "Samstag",
+        "focus": "Kondition + Schwachstellen",
+        "drill_ids": [
+          "drill-kondition-intervall-sprint-17",
+          "drill-kondition-springseil-18",
+          "drill-rueckschlag-schupf-10",
+          "drill-rueckschlag-flip-lang-11"
+        ],
+        "duration_minutes": 90,
+        "notes": "20 Min Konditionstraining (Sprints + Springseil), 20 Min individuelle Schwachstellen-Arbeit (Rueckschlag), 20 Min Spielmuster gegen unbequeme Spielertypen, 30 Min Trainingsspiele mit Satzzaehlung"
+      }
+    ],
+    "progression_notes": "Woche 1-2: Technik-Inventur — alle Schlaege durchgehen und Schwachstellen identifizieren. Woche 3-4: Gezieltes Schwachstellen-Training, taktische Muster gegen verschiedene Spielertypen. Woche 5-6: Wettkampfsimulation mit Drucksituationen (ab 5:5, ab 8:10 zurueck). Woche 7: Intensitaet leicht reduzieren, Feinschliff an den wichtigsten Spielmustern. Woche 8: Tapering — reduziertes Volumen, hohe Qualitaet, mentale Vorbereitung auf den Wettkampf."
+  }
+]

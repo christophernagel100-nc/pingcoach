@@ -1,0 +1,398 @@
+[
+  {
+    "id": "tech-vh-topspin",
+    "name": "Vorhand Topspin",
+    "stroke_type": "vorhand_topspin",
+    "category": "vorhand",
+    "description": "Der Vorhand Topspin ist der wichtigste Angriffsschlag im Tischtennis. Durch eine nach vorne-oben gerichtete Schlagbewegung wird dem Ball starker Vorwaertsdrall verliehen, der ihn nach dem Aufprall beschleunigt.",
+    "videos": [
+      {
+        "youtube_id": "placeholder_tom-lodziak-vh-topspin",
+        "title": "Beginner's guide to forehand topspin",
+        "channel": "Tom Lodziak",
+        "duration_seconds": 612,
+        "language": "en"
+      }
+    ],
+    "key_points": [
+      {
+        "title": "Ausgangsstellung",
+        "description": "Leicht breiter Stand als schulterbreit, Knie gebeugt, Gewicht auf den Fussballen. Der Oberkoerper ist leicht nach vorne geneigt."
+      },
+      {
+        "title": "Ausschwung und Gewichtsverlagerung",
+        "description": "Den Schlaeger auf Huefthoehe zurueckfuehren, dabei das Gewicht auf das rechte Bein (Rechtshaender) verlagern. Der Arm ist leicht angewinkelt, das Handgelenk locker."
+      },
+      {
+        "title": "Schlagbewegung nach vorne-oben",
+        "description": "Den Ball in der aufsteigenden Phase treffen. Die Bewegung kommt aus Hueftrotation und Unterarm, der Schlaeger streift den Ball tangential von unten nach vorne-oben."
+      },
+      {
+        "title": "Kontaktpunkt und Timing",
+        "description": "Den Ball auf Tischhoehe oder leicht darueber treffen, idealerweise am hoechsten Punkt oder kurz davor. Der Schlaegerwinkel ist leicht geschlossen (ca. 45-60 Grad)."
+      },
+      {
+        "title": "Ausschwung und Rueckfuehrung",
+        "description": "Der Schlaeger schwingt kontrolliert bis auf Stirnhoehe aus. Danach sofort in die neutrale Grundstellung zurueckkehren fuer den naechsten Schlag."
+      }
+    ],
+    "common_mistakes": [
+      {
+        "mistake": "Nur aus dem Arm schlagen, ohne Hueftrotation",
+        "correction": "Die Kraft kommt primaer aus der Hueftdrehung. Den Koerper als Einheit drehen und den Arm als Verlaengerung nutzen.",
+        "severity": "schwer"
+      },
+      {
+        "mistake": "Ball zu spaet treffen (in der fallenden Phase)",
+        "correction": "Den Ball frueh annehmen, idealerweise am hoechsten Punkt. Naeher am Tisch positionieren und den Treffpunkt vor dem Koerper halten.",
+        "severity": "mittel"
+      },
+      {
+        "mistake": "Schlaeger zu offen halten, sodass der Ball ins Netz oder flach geht",
+        "correction": "Den Schlaeger leicht schliessen und den Ball von unten nach vorne-oben streifen. Mehr Handgelenkseinsatz fuer Spin nutzen.",
+        "severity": "mittel"
+      }
+    ],
+    "related_drill_ids": [
+      "drill-vh-topspin-01",
+      "drill-vh-konter-topspin-02"
+    ]
+  },
+  {
+    "id": "tech-rh-topspin",
+    "name": "Rueckhand Topspin",
+    "stroke_type": "rueckhand_topspin",
+    "category": "rueckhand",
+    "description": "Der Rueckhand Topspin wird vor dem Koerper gespielt und erfordert eine kompakte Schlagbewegung aus dem Ellbogen und Handgelenk. Er ist essenziell fuer ein modernes, beidseitiges Angriffsspiel.",
+    "videos": [
+      {
+        "youtube_id": "placeholder_pingskills-rh-topspin",
+        "title": "Backhand Topspin Tutorial",
+        "channel": "PingSkills",
+        "duration_seconds": 480,
+        "language": "en"
+      }
+    ],
+    "key_points": [
+      {
+        "title": "Kompakte Ausholbewegung",
+        "description": "Den Schlaeger vor dem Koerper auf Bauchhoehe zurueckfuehren. Der Ellbogen bleibt relativ nah am Koerper, das Handgelenk ist nach unten abgeklappt."
+      },
+      {
+        "title": "Ellbogen als Drehpunkt",
+        "description": "Die Hauptbewegung kommt aus dem Unterarm mit dem Ellbogen als Drehachse. Das Handgelenk beschleunigt am Ende der Bewegung fuer maximalen Spin."
+      },
+      {
+        "title": "Treffpunkt vor dem Koerper",
+        "description": "Den Ball direkt vor dem Bauch oder leicht seitlich treffen. Nie zu weit rechts oder links, da sonst die Kontrolle verloren geht."
+      },
+      {
+        "title": "Gewichtsverlagerung nach vorne",
+        "description": "Beim Schlag das Gewicht leicht nach vorne auf die Fussballen verlagern. Der Oberkoerper bleibt stabil und kippt nicht zur Seite."
+      }
+    ],
+    "common_mistakes": [
+      {
+        "mistake": "Zu grosse Ausholbewegung, Arm geht weit zurueck",
+        "correction": "Die Rueckhand lebt von Kompaktheit. Kleine, schnelle Bewegung aus Ellbogen und Handgelenk statt grossem Armschwung.",
+        "severity": "schwer"
+      },
+      {
+        "mistake": "Ellbogen wandert nach aussen weg vom Koerper",
+        "correction": "Den Ellbogen nah am Koerper halten. Er dient als stabiler Drehpunkt — sobald er abhebt, geht Kontrolle und Spin verloren.",
+        "severity": "mittel"
+      },
+      {
+        "mistake": "Steife Handgelenkhaltung ohne Beschleunigung",
+        "correction": "Das Handgelenk locker lassen und am Ende der Schlagbewegung bewusst nach vorne-oben beschleunigen fuer mehr Rotation.",
+        "severity": "mittel"
+      }
+    ],
+    "related_drill_ids": [
+      "drill-rh-topspin-04"
+    ]
+  },
+  {
+    "id": "tech-vh-push",
+    "name": "Vorhand Push / Schupf",
+    "stroke_type": "vorhand_push",
+    "category": "vorhand",
+    "description": "Der Vorhand Schupf ist ein defensiver Unterschnittschlag, der kurze oder halblange Baelle kontrolliert zurueckspielt. Er ist entscheidend fuer den Aufschlag-Rueckschlag und das Aufbauspiel.",
+    "videos": [
+      {
+        "youtube_id": "placeholder_vh-push-tutorial",
+        "title": "Vorhand Schupf richtig lernen",
+        "channel": "Tischtennis Trainer",
+        "duration_seconds": 390,
+        "language": "de"
+      }
+    ],
+    "key_points": [
+      {
+        "title": "Schlaeger oeffnen",
+        "description": "Den Schlaeger unter dem Ball fuehren mit offener Schlaegerstellung (ca. 30-45 Grad). Die Schlagnase zeigt leicht nach oben."
+      },
+      {
+        "title": "Kurze, kontrollierte Bewegung",
+        "description": "Keine grosse Ausholbewegung. Den Ball mit einer kurzen Vorwaerts-Abwaerts-Bewegung streifen. Die Laenge wird ueber die Kraft dosiert."
+      },
+      {
+        "title": "Nah an den Tisch treten",
+        "description": "Fuer kurze Baelle einen Schritt zum Tisch machen und den Ball moeglichst frueh nach dem Aufsprung annehmen. Der freie Arm geht fuer die Balance mit."
+      },
+      {
+        "title": "Unterschnitt kontrollieren",
+        "description": "Je mehr der Schlaeger unter den Ball geht, desto mehr Unterschnitt entsteht. Fuer einen flachen, gefaehrlichen Schupf den Ball duenn streifen."
+      }
+    ],
+    "common_mistakes": [
+      {
+        "mistake": "Ball nur schieben statt streifen — kein Unterschnitt",
+        "correction": "Den Ball tangential beruehren und mit der Schlaegeroberflaeche aktiv streifen. Nicht einfach dagegen druecken.",
+        "severity": "schwer"
+      },
+      {
+        "mistake": "Zu weit vom Tisch stehen bei kurzen Baellen",
+        "correction": "Aktiv mit dem rechten Fuss (Rechtshaender) zum Tisch treten. Der Schupf wird am Tisch gespielt, nicht aus der Distanz.",
+        "severity": "mittel"
+      },
+      {
+        "mistake": "Ball zu hoch zurueckspielen",
+        "correction": "Den Schlaeger flacher fuehren und den Ball knapp uebers Netz spielen. Hohe Schupfbaelle sind leichte Angriffsbaelle fuer den Gegner.",
+        "severity": "leicht"
+      }
+    ],
+    "related_drill_ids": [
+      "drill-rueckschlag-schupf-10"
+    ]
+  },
+  {
+    "id": "tech-rh-block",
+    "name": "Rueckhand Block",
+    "stroke_type": "rueckhand_block",
+    "category": "rueckhand",
+    "description": "Der Rueckhand Block ist ein kompakter Verteidigungsschlag gegen schnelle Topspins. Durch minimale Eigenbewegung wird die Energie des ankommenden Balls genutzt, um ihn kontrolliert zurueckzuspielen.",
+    "videos": [
+      {
+        "youtube_id": "placeholder_rh-block-basics",
+        "title": "Rueckhand Block Grundlagen",
+        "channel": "Tischtennis Trainer",
+        "duration_seconds": 345,
+        "language": "de"
+      }
+    ],
+    "key_points": [
+      {
+        "title": "Schlaeger vor dem Koerper",
+        "description": "Den Schlaeger auf Tischhoehe vor dem Koerper halten. Der Schlaegerwinkel ist leicht geschlossen, um den Topspin des Gegners zu neutralisieren."
+      },
+      {
+        "title": "Minimale Eigenbewegung",
+        "description": "Beim Block den Schlaeger nur leicht nach vorne fuehren. Die Energie kommt vom ankommenden Ball — zu viel Eigenbewegung fuehrt zu Kontrollverlust."
+      },
+      {
+        "title": "Timing ist entscheidend",
+        "description": "Den Ball frueh nach dem Aufsprung annehmen (aufsteigende Phase). Je frueher der Treffpunkt, desto weniger Zeit hat der Gegner fuer den naechsten Schlag."
+      },
+      {
+        "title": "Platzierung variieren",
+        "description": "Durch minimale Winkelaenderungen den Block in verschiedene Richtungen lenken. Ein platzierten Block setzt den Gegner unter Druck."
+      }
+    ],
+    "common_mistakes": [
+      {
+        "mistake": "Schlaeger zu offen halten gegen Topspin",
+        "correction": "Den Schlaeger leicht schliessen, um den Vorwaertsdrall zu kompensieren. Sonst fliegt der Ball uebers Spielfeld hinaus.",
+        "severity": "schwer"
+      },
+      {
+        "mistake": "Zu viel Eigenbewegung — aktiv gegenschlagen statt blocken",
+        "correction": "Den Schlaeger ruhig halten und den Ball 'auffangen'. Der Block ist passiv — die Energie kommt vom Gegner.",
+        "severity": "mittel"
+      },
+      {
+        "mistake": "Zu weit hinten stehen beim Blocken",
+        "correction": "Nah am Tisch bleiben (max. 50 cm Abstand). Aus der Distanz laesst sich ein Topspin kaum kontrolliert blocken.",
+        "severity": "mittel"
+      }
+    ],
+    "related_drill_ids": [
+      "drill-rh-block-05"
+    ]
+  },
+  {
+    "id": "tech-aufschlag",
+    "name": "Aufschlag Grundlagen",
+    "stroke_type": "aufschlag",
+    "category": "aufschlag",
+    "description": "Der Aufschlag ist der einzige Schlag, den man ohne Gegnereinfluss ausfuehren kann. Durch Variation von Spin, Platzierung und Laenge wird der Rueckschlag des Gegners kontrolliert und das eigene Angriffsspiel vorbereitet.",
+    "videos": [
+      {
+        "youtube_id": "placeholder_craig-bryant-killer-serves",
+        "title": "4 Killer Serves",
+        "channel": "The TT Service Guy",
+        "duration_seconds": 720,
+        "language": "en"
+      }
+    ],
+    "key_points": [
+      {
+        "title": "Ballwurf regelkonform",
+        "description": "Den Ball aus der offenen Handflaeche mindestens 16 cm hoch werfen (ITTF-Regel). Nicht aus den Fingern werfen oder den Ball verdeckt hochschleudern."
+      },
+      {
+        "title": "Handgelenk-Beschleunigung fuer Spin",
+        "description": "Maximaler Spin entsteht durch schnelle Handgelenkbeschleunigung am Treffpunkt. Den Ball moeglichst duenn streifen — je duenner der Kontakt, desto mehr Rotation."
+      },
+      {
+        "title": "Kurz-Kurz Prinzip",
+        "description": "Ein kurzer Aufschlag sollte idealerweise zweimal auf der gegnerischen Haelfte aufspringen. Dafuer den Ball nah am Netz auf der eigenen Haelfte auftreffen lassen."
+      },
+      {
+        "title": "Spin-Variation mit gleicher Bewegung",
+        "description": "Unterschnitt, Seitschnitt und ohne Schnitt mit moeglichst aehnlicher Bewegung ausfuehren. Der Gegner soll den Spin nicht lesen koennen."
+      },
+      {
+        "title": "Platzierung als taktische Waffe",
+        "description": "Kurz zur Vorhand, kurz zur Rueckhand, halblang zur Mitte — jede Platzierung erzwingt eine andere Reaktion und oeffnet unterschiedliche Angriffsmuster."
+      }
+    ],
+    "common_mistakes": [
+      {
+        "mistake": "Ball zu hoch werfen und Timing verlieren",
+        "correction": "Den Ball kontrolliert 16-20 cm hoch werfen. Uebertrieben hohe Wuerfe machen das Timing unnoetig schwer.",
+        "severity": "leicht"
+      },
+      {
+        "mistake": "Immer den gleichen Aufschlag spielen",
+        "correction": "Mindestens 3-4 verschiedene Aufschlaege beherrschen und variieren. Vorhersehbare Aufschlage werden vom Gegner sofort attackiert.",
+        "severity": "schwer"
+      },
+      {
+        "mistake": "Ball zu dick treffen — wenig Spin, zu schnell",
+        "correction": "Den Ball tangential streifen, nicht frontal treffen. Spin ist wichtiger als Geschwindigkeit beim Aufschlag.",
+        "severity": "mittel"
+      }
+    ],
+    "related_drill_ids": [
+      "drill-aufschlag-kurz-us-07",
+      "drill-aufschlag-lang-ts-08",
+      "drill-aufschlag-seitschnitt-09"
+    ]
+  },
+  {
+    "id": "tech-rueckschlag",
+    "name": "Rueckschlag / Return",
+    "stroke_type": "sonstiges",
+    "category": "rueckschlag",
+    "description": "Der Rueckschlag entscheidet oft den Ballwechsel. Ziel ist es, den Spin des Aufschlags zu lesen und mit dem passenden Schlag (Schupf, Flip oder Topspin) zu antworten, ohne dem Gegner einen leichten dritten Ball zu schenken.",
+    "videos": [
+      {
+        "youtube_id": "placeholder_return-strategies",
+        "title": "Rueckschlag-Strategien im Tischtennis",
+        "channel": "Tischtennis Trainer",
+        "duration_seconds": 540,
+        "language": "de"
+      }
+    ],
+    "key_points": [
+      {
+        "title": "Spin lesen lernen",
+        "description": "Auf die Schlagerabhaengigkeit des Gegners beim Aufschlag achten. Geht der Schlaeger unter den Ball: Unterschnitt. Seitlich am Ball: Seitschnitt. Die Ballflugkurve bestaetigt die Beobachtung."
+      },
+      {
+        "title": "Frueher Treffpunkt",
+        "description": "Kurze Aufschlaege moeglichst frueh ueber dem Tisch annehmen. Das nimmt dem Spin Wirkung und laesst dem Aufschlaeger weniger Zeit fuer den dritten Ball."
+      },
+      {
+        "title": "Richtige Technikwahl",
+        "description": "Kurz-Unterschnitt: Schupf zurueck. Kurz-ohne-Schnitt oder halblang: Flip angreifen. Lang: Topspin eroeffnen. Die Laenge des Aufschlags bestimmt die Antwort."
+      },
+      {
+        "title": "Platzierung vor Haerte",
+        "description": "Den Rueckschlag gezielt platzieren statt einfach zurueckzuspielen. Ein kontrollierter kurzer Return zur Mitte ist besser als ein unkontrollierter Flip ins Aus."
+      }
+    ],
+    "common_mistakes": [
+      {
+        "mistake": "Passiv stehen bleiben und nur reagieren",
+        "correction": "Aktiv zum Ball bewegen und den Rueckschlag als Chance sehen, selbst Druck aufzubauen. Besonders bei halbangen Aufschlaegen offensiv antworten.",
+        "severity": "schwer"
+      },
+      {
+        "mistake": "Spin des Aufschlags ignorieren und einfach dagegen schlagen",
+        "correction": "Vor dem Return den Spin identifizieren und den Schlaegerwinkel entsprechend anpassen. Unterschnitt = Schlaeger oeffnen, Oberschnitt = Schlaeger schliessen.",
+        "severity": "schwer"
+      },
+      {
+        "mistake": "Immer den gleichen Rueckschlag spielen",
+        "correction": "Zwischen Schupf, Flip und Topspin variieren. Ein vorhersehbarer Return macht es dem Aufschlaeger leicht, den dritten Ball vorzubereiten.",
+        "severity": "mittel"
+      }
+    ],
+    "related_drill_ids": [
+      "drill-rueckschlag-schupf-10",
+      "drill-rueckschlag-flip-lang-11"
+    ]
+  },
+  {
+    "id": "tech-beinarbeit",
+    "name": "Beinarbeit Grundlagen",
+    "stroke_type": "sonstiges",
+    "category": "beinarbeit",
+    "description": "Gute Beinarbeit ist das Fundament jedes Tischtennisspiels. Ohne richtige Fussstellung und schnelle Positionierung koennen selbst perfekte Schlagtechniken nicht effektiv eingesetzt werden.",
+    "videos": [
+      {
+        "youtube_id": "placeholder_footwork-basics",
+        "title": "Beinarbeit Grundlagen fuer Tischtennis",
+        "channel": "Tischtennis Trainer",
+        "duration_seconds": 480,
+        "language": "de"
+      }
+    ],
+    "key_points": [
+      {
+        "title": "Grundstellung und Bereitschaftshaltung",
+        "description": "Fuesse schulterbreit, Knie leicht gebeugt, Gewicht auf den Fussballen. Fersen haben minimalen Bodenkontakt. Der Koerper ist nach vorne geneigt und sprungbereit."
+      },
+      {
+        "title": "Sidesteps fuer kurze Distanzen",
+        "description": "Fuer Baelle 1-2 Schritte seitlich: Sidesteps nutzen. Der fussnahe Fuss startet, der andere folgt. Nie die Fuesse kreuzen bei kurzen Wegen."
+      },
+      {
+        "title": "Kreuzschritte fuer weite Baelle",
+        "description": "Bei weiten Baellen (z.B. Vorhand aus der Rueckhandecke) den Kreuzschritt einsetzen. Das hintere Bein kreuzt vor oder hinter dem vorderen Bein fuer maximale Reichweite."
+      },
+      {
+        "title": "Sofortige Rueckkehr zur Mitte",
+        "description": "Nach jedem Schlag zurueck in die Grundposition. Der Split-Step (kleiner Huepfer auf beide Fussballen) vor dem naechsten Schlag des Gegners macht reaktionsbereit."
+      },
+      {
+        "title": "Falkenberg-Muster",
+        "description": "Das klassische Beinarbeitsmuster: Vorhand aus der Vorhandseite, Vorhand aus der Mitte, Vorhand aus der Rueckhandseite — trainiert die Umstellung und den Kreuzschritt."
+      }
+    ],
+    "common_mistakes": [
+      {
+        "mistake": "Auf den Fersen stehen statt auf den Fussballen",
+        "correction": "Bewusst auf die Fussballen verlagern. Von den Fersen laesst sich nicht explosiv starten. Im Training regelmaessig die Grundstellung pruefen.",
+        "severity": "schwer"
+      },
+      {
+        "mistake": "Nach dem Schlag am Ort stehen bleiben",
+        "correction": "Sofort zurueck in die Mitte bewegen. Die Beinarbeit hoert nie auf — zwischen jedem Schlag zurueckstellen und neu ausrichten.",
+        "severity": "schwer"
+      },
+      {
+        "mistake": "Zu aufrechte Koerperhaltung, Knie kaum gebeugt",
+        "correction": "Tiefer gehen, Knie staerker beugen. Ein tiefer Schwerpunkt erhoet die Stabilitaet und ermoeglicht schnellere Richtungswechsel.",
+        "severity": "mittel"
+      }
+    ],
+    "related_drill_ids": [
+      "drill-beinarbeit-sidestep-12",
+      "drill-beinarbeit-1-2-schritt-13",
+      "drill-beinarbeit-falkenberg-14"
+    ]
+  }
+]

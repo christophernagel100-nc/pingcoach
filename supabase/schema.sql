@@ -17,6 +17,8 @@ CREATE TABLE pc_profiles (
   goals TEXT[] DEFAULT '{}',
   weekly_training_hours SMALLINT DEFAULT 2,
   club_name TEXT,
+  ttr_rating SMALLINT CHECK (ttr_rating BETWEEN 0 AND 3000),
+  strengths TEXT[] DEFAULT '{}',
   onboarding_completed BOOLEAN DEFAULT FALSE,
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW()

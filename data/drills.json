@@ -1,0 +1,591 @@
+[
+  {
+    "id": "drill-vh-topspin-01",
+    "name": "Vorhand Topspin Grundschlag",
+    "description": "Grundlegendes Training des Vorhand-Topspins mit gleichmaessiger Ballzufuhr. Ideal fuer Einsteiger, um die korrekte Schlagbewegung und den Kontaktpunkt zu verinnerlichen.",
+    "category": "vorhand",
+    "difficulty": "anfaenger",
+    "target_weakness": ["vorhand_topspin"],
+    "duration_minutes": 10,
+    "equipment_needed": ["Tischtennistisch", "Baelle", "Trainingspartner"],
+    "instructions": {
+      "steps": [
+        "Grundstellung einnehmen: Fuesse schulterbreit, leicht in den Knien, Gewicht auf den Fussballen.",
+        "Trainingspartner spielt gleichmaessige Unterschnittbaelle auf die Vorhandseite.",
+        "Schlaeger in der Ausholphase nach hinten-unten fuehren, Handgelenk locker lassen.",
+        "Ball im aufsteigenden Ast treffen, dabei Unterarm und Handgelenk nach vorne-oben beschleunigen.",
+        "Gewichtsverlagerung von rechtem auf linkes Bein (Rechtshaender) bewusst durchfuehren.",
+        "Ausschwung kontrolliert nach vorne-oben beenden, zurueck in Grundstellung."
+      ],
+      "sets": 3,
+      "reps": 20,
+      "rest_seconds": 30
+    },
+    "tips": [
+      "Den Ball nicht zu frueh treffen — warte, bis er den hoechsten Punkt erreicht.",
+      "Achte darauf, dass die Bewegung aus der Huefte kommt, nicht nur aus dem Arm.",
+      "Schlaeger-Winkel leicht geschlossen halten, um dem Ball genug Rotation mitzugeben."
+    ],
+    "created_at": "2026-03-24T00:00:00Z"
+  },
+  {
+    "id": "drill-vh-konter-topspin-02",
+    "name": "Vorhand Konter-Topspin",
+    "description": "Training des Vorhand-Topspins gegen einen einkommenden Topspin. Schult Timing und die Anpassung des Schlaegerwinkels bei schnellen Ballwechseln.",
+    "category": "vorhand",
+    "difficulty": "mittel",
+    "target_weakness": ["vorhand_topspin", "vorhand_block"],
+    "duration_minutes": 10,
+    "equipment_needed": ["Tischtennistisch", "Baelle", "Trainingspartner"],
+    "instructions": {
+      "steps": [
+        "Grundstellung nah am Tisch einnehmen, Koerper leicht nach vorne geneigt.",
+        "Trainingspartner spielt moderate Topspinbaelle diagonal auf die Vorhandseite.",
+        "Schlaeger geschlossener als beim normalen Topspin halten, da der Ball bereits Vorwaertsdrall hat.",
+        "Kuerzere Ausholbewegung als beim Eroeffnungs-Topspin, Timing ist entscheidend.",
+        "Ball frueh im aufsteigenden Ast treffen und mit Tempo zurueckspielen.",
+        "Nach jedem Schlag sofort zurueck in die Grundstellung — Rhythmus halten."
+      ],
+      "sets": 3,
+      "reps": 25,
+      "rest_seconds": 30
+    },
+    "tips": [
+      "Weniger Ausholbewegung als beim normalen Topspin — die Geschwindigkeit des Balles nutzen.",
+      "Schlaeger-Winkel staerker schliessen, um den einkommenden Topspin zu kontrollieren.",
+      "Fokus auf gleichmaessigen Rhythmus statt maximale Power."
+    ],
+    "created_at": "2026-03-24T00:00:00Z"
+  },
+  {
+    "id": "drill-vh-eroeffnung-03",
+    "name": "Vorhand-Eroeffnung nach kurzem Ball",
+    "description": "Eroeffnung eines Topspin-Angriffs aus einem kurzen Unterschnittball. Trainiert den Uebergang vom passiven zum aktiven Spiel und die Beinarbeit zum Tisch.",
+    "category": "vorhand",
+    "difficulty": "fortgeschritten",
+    "target_weakness": ["vorhand_topspin", "vorhand_flip"],
+    "duration_minutes": 12,
+    "equipment_needed": ["Tischtennistisch", "Baelle", "Trainingspartner"],
+    "instructions": {
+      "steps": [
+        "Grundstellung ca. 50 cm hinter dem Tisch einnehmen.",
+        "Trainingspartner spielt kurze Unterschnittbaelle abwechselnd auf Mitte und Vorhandseite.",
+        "Mit schnellem Schritt zum Tisch bewegen, rechten Fuss unter den Tisch schieben.",
+        "Ball im hoechsten Punkt mit offenem Schlaeger und viel Handgelenkseinsatz anreissen.",
+        "Nach dem Eroeffnungs-Topspin sofort zurueck in Halbdistanz-Position fuer den naechsten Ball.",
+        "Variation: Platzierung abwechselnd lang diagonal und lang parallel."
+      ],
+      "sets": 4,
+      "reps": 15,
+      "rest_seconds": 45
+    },
+    "tips": [
+      "Der Schritt zum Tisch ist wichtiger als der Schlag — ohne gute Position kein guter Topspin.",
+      "Handgelenk beim Eroeffnungs-Topspin aktiv einsetzen, um trotz kurzem Ball genug Spin zu erzeugen.",
+      "Nach der Eroeffnung sofort bereit fuer den Gegenschlag sein — nicht dem Ball hinterherschauen."
+    ],
+    "created_at": "2026-03-24T00:00:00Z"
+  },
+  {
+    "id": "drill-rh-topspin-04",
+    "name": "Rueckhand Topspin Grundschlag",
+    "description": "Grundlegendes Training des Rueckhand-Topspins. Fokus auf die kompakte Schlagbewegung aus dem Ellbogen und die richtige Koerperposition.",
+    "category": "rueckhand",
+    "difficulty": "anfaenger",
+    "target_weakness": ["rueckhand_topspin"],
+    "duration_minutes": 10,
+    "equipment_needed": ["Tischtennistisch", "Baelle", "Trainingspartner"],
+    "instructions": {
+      "steps": [
+        "Grundstellung frontal zum Tisch, Ellbogen leicht vor dem Koerper, Unterarm angewinkelt.",
+        "Trainingspartner spielt gleichmaessige Unterschnittbaelle auf die Rueckhandseite.",
+        "Ausholbewegung: Unterarm zum Bauch fuehren, Schlaeger zeigt nach unten.",
+        "Schlagbewegung hauptsaechlich aus dem Ellbogen nach vorne-oben, Handgelenk unterstuetzt.",
+        "Treffpunkt vor dem Koerper, Ball im aufsteigenden Ast nehmen.",
+        "Kompakter Ausschwung, Schlaeger endet etwa auf Kopfhoehe."
+      ],
+      "sets": 3,
+      "reps": 20,
+      "rest_seconds": 30
+    },
+    "tips": [
+      "Die Rueckhand lebt von der kompakten Bewegung — keine grossen Ausholbewegungen noetig.",
+      "Ellbogen als Drehpunkt nutzen, nicht den ganzen Arm schwingen.",
+      "Handgelenk beim Ballkontakt leicht nach vorne schnappen lassen fuer mehr Spin."
+    ],
+    "created_at": "2026-03-24T00:00:00Z"
+  },
+  {
+    "id": "drill-rh-block-05",
+    "name": "Rueckhand-Block am Tisch",
+    "description": "Training des aktiven Blocks auf der Rueckhandseite gegen einkommende Topspinbaelle. Schult Reaktion, Schlaegerwinkel und Ballkontrolle unter Druck.",
+    "category": "rueckhand",
+    "difficulty": "mittel",
+    "target_weakness": ["rueckhand_block", "rueckhand_topspin"],
+    "duration_minutes": 8,
+    "equipment_needed": ["Tischtennistisch", "Baelle", "Trainingspartner"],
+    "instructions": {
+      "steps": [
+        "Dicht am Tisch stehen, Schlaeger auf Netzhöhe vor dem Koerper halten.",
+        "Trainingspartner spielt kraftvolle Topspinbaelle auf die Rueckhandseite.",
+        "Schlaeger geschlossen halten, nur minimale Vorwaertsbewegung — der Ball prallt kontrolliert ab.",
+        "Platzierung variieren: abwechselnd kurz und lang zurueckblocken.",
+        "Bei staerkerem Spin den Schlaeger weiter schliessen, bei weniger Spin leicht oeffnen.",
+        "Tempo schrittweise steigern, wenn die Kontrolle stimmt."
+      ],
+      "sets": 3,
+      "reps": 25,
+      "rest_seconds": 30
+    },
+    "tips": [
+      "Weniger ist mehr — der Block braucht minimale Eigenbewegung, der Spin des Gegners arbeitet fuer dich.",
+      "Schlaegerwinkel ist der Schluessel: zu offen = Ball fliegt hoch, zu geschlossen = Ball geht ins Netz.",
+      "Koerper ruhig halten, Gewicht leicht nach vorne, nur Unterarm und Handgelenk justieren."
+    ],
+    "created_at": "2026-03-24T00:00:00Z"
+  },
+  {
+    "id": "drill-rh-banana-flip-06",
+    "name": "Rueckhand Banana-Flip",
+    "description": "Fortgeschrittene Technik zum aggressiven Rueckschlag kurzer Baelle mit der Rueckhand. Der Banana-Flip erzeugt Seitenspin und ueberrascht den Gegner.",
+    "category": "rueckhand",
+    "difficulty": "fortgeschritten",
+    "target_weakness": ["rueckhand_flip", "rueckhand_topspin"],
+    "duration_minutes": 12,
+    "equipment_needed": ["Tischtennistisch", "Baelle", "Trainingspartner"],
+    "instructions": {
+      "steps": [
+        "Trainingspartner spielt kurze Baelle (mit oder ohne Unterschnitt) auf die Rueckhandseite.",
+        "Mit dem rechten Fuss zum Tisch treten, Ellbogen nach vorne-oben fuehren.",
+        "Handgelenk stark nach aussen abknicken (Ausholposition).",
+        "Ball seitlich aussen anreissen — das Handgelenk schnappt ueber den Ball und erzeugt den typischen Bogen.",
+        "Treffpunkt moeglichst frueh, knapp nach dem Aufsprung auf der eigenen Tischhaelfte.",
+        "Platzierung variieren: einmal lang diagonal, einmal kurz parallel."
+      ],
+      "sets": 4,
+      "reps": 12,
+      "rest_seconds": 45
+    },
+    "tips": [
+      "Der Name kommt von der Flugkurve — der Ball fliegt einen Bogen wie eine Banane. Das gelingt nur mit genug Seitenspin.",
+      "Ellbogen hoch! Wenn der Ellbogen zu tief ist, fehlt der Raum fuer die Handgelenksbewegung.",
+      "Zunaechst langsam ueben und Gefuehl fuer den Kontaktpunkt entwickeln, dann Tempo steigern."
+    ],
+    "created_at": "2026-03-24T00:00:00Z"
+  },
+  {
+    "id": "drill-aufschlag-kurz-us-07",
+    "name": "Kurzer Aufschlag mit Unterschnitt",
+    "description": "Training des kurzen Unterschnitt-Aufschlags. Ziel ist es, den Ball so kurz zu spielen, dass er mindestens zweimal auf der gegnerischen Haelfte aufspringt.",
+    "category": "aufschlag",
+    "difficulty": "anfaenger",
+    "target_weakness": ["aufschlag"],
+    "duration_minutes": 8,
+    "equipment_needed": ["Tischtennistisch", "Baelle"],
+    "instructions": {
+      "steps": [
+        "Ball flach auf die eigene Tischhaelfte werfen, Aufsprung nah am Netz anvisieren.",
+        "Schlaeger weit offen halten, Kontakt unter dem Ball mit duenner Beruehrung.",
+        "Handgelenk schnell unter dem Ball durchziehen fuer maximalen Unterschnitt.",
+        "Erster Aufsprung auf eigener Seite sollte nah am Netz sein — das haelt den Ball kurz.",
+        "10 Aufschlaege hintereinander ueben, dann Platzierung wechseln (Mitte, Vorhand, Rueckhand).",
+        "Qualitaetskontrolle: Springt der Ball mindestens 2x auf der gegnerischen Seite auf?"
+      ],
+      "sets": 3,
+      "reps": 15,
+      "rest_seconds": 20
+    },
+    "tips": [
+      "Je duenner die Ballberuehrung, desto mehr Spin und weniger Vorwaertsbewegung — der Ball bleibt kurz.",
+      "Der erste Aufsprung auf der eigenen Tischseite bestimmt die Laenge: nah am Netz = kurzer Aufschlag.",
+      "Handgelenk ist der Hauptmotor beim Aufschlag, nicht der Arm."
+    ],
+    "created_at": "2026-03-24T00:00:00Z"
+  },
+  {
+    "id": "drill-aufschlag-lang-ts-08",
+    "name": "Langer Aufschlag mit Topspin",
+    "description": "Training des langen, schnellen Topspin-Aufschlags. Dient als Ueberraschungswaffe und zwingt den Gegner in eine defensive Position.",
+    "category": "aufschlag",
+    "difficulty": "mittel",
+    "target_weakness": ["aufschlag"],
+    "duration_minutes": 8,
+    "equipment_needed": ["Tischtennistisch", "Baelle"],
+    "instructions": {
+      "steps": [
+        "Ball auf der eigenen Tischhaelfte moeglichst nah an der Grundlinie aufspringen lassen.",
+        "Schlaeger geschlossen halten, Ball oben-hinten treffen mit schneller Vorwaertsbewegung.",
+        "Ziel: Der Ball soll tief und schnell auf die gegnerische Grundlinie fliegen.",
+        "Platzierung ueben: 10x auf Vorhandecke, 10x auf Rueckhandecke, 10x auf Ellbogen.",
+        "Tempo variieren: nicht immer volle Kraft, auch 70%-Aufschlaege mit viel Spin.",
+        "Direkt nach dem Aufschlag in Angriffsbereitschaft gehen."
+      ],
+      "sets": 3,
+      "reps": 15,
+      "rest_seconds": 20
+    },
+    "tips": [
+      "Der lange Aufschlag ist nur effektiv als Ueberraschung — nicht zu oft hintereinander spielen.",
+      "Aufschlagbewegung soll wie der kurze Aufschlag aussehen, damit der Gegner spaet reagiert.",
+      "Auf die Ellbogen-Position des Gegners zielen — dort ist der Umschaltpunkt VH/RH am schwierigsten."
+    ],
+    "created_at": "2026-03-24T00:00:00Z"
+  },
+  {
+    "id": "drill-aufschlag-seitschnitt-09",
+    "name": "Aufschlag mit Seitschnitt",
+    "description": "Training des Aufschlags mit Seitschnitt-Varianten (Pendulum und Reverse Pendulum). Fortgeschrittene Technik, die den Rueckschlag des Gegners vorhersehbar macht.",
+    "category": "aufschlag",
+    "difficulty": "fortgeschritten",
+    "target_weakness": ["aufschlag"],
+    "duration_minutes": 10,
+    "equipment_needed": ["Tischtennistisch", "Baelle"],
+    "instructions": {
+      "steps": [
+        "Pendulum-Aufschlag: Koerper seitlich zum Tisch, Schlaeger von rechts nach links fuehren (Rechtshaender).",
+        "Ball seitlich anreissen — der Ball springt beim Gegner nach links weg.",
+        "Reverse Pendulum: Gleiche Ausgangsposition, aber Schlaeger von links nach rechts fuehren.",
+        "Beide Varianten abwechselnd ueben: 5x Pendulum, 5x Reverse, dann im Wechsel.",
+        "Kombination mit Laenge: kurzer Seitschnitt und langer Seitschnitt mit gleicher Bewegung.",
+        "Qualitaetskontrolle: Springt der Ball deutlich seitlich weg?"
+      ],
+      "sets": 4,
+      "reps": 12,
+      "rest_seconds": 30
+    },
+    "tips": [
+      "Die Taeuschung liegt in der aehnlichen Bewegung — Pendulum und Reverse sollen gleich aussehen.",
+      "Seitschnitt macht den Rueckschlag vorhersehbar: du weisst, wohin der Return kommt, und kannst den dritten Ball planen.",
+      "Kontaktpunkt am Ball variieren: seitlich = reiner Seitschnitt, unten-seitlich = Seit-Unterschnitt."
+    ],
+    "created_at": "2026-03-24T00:00:00Z"
+  },
+  {
+    "id": "drill-rueckschlag-schupf-10",
+    "name": "Rueckschlag Schupf kurz",
+    "description": "Training des kurzen Schupf-Rueckschlags gegen kurze Unterschnitt-Aufschlaege. Grundtechnik fuer kontrolliertes, passives Spiel am Tisch.",
+    "category": "rueckschlag",
+    "difficulty": "anfaenger",
+    "target_weakness": ["vorhand_push", "rueckhand_push"],
+    "duration_minutes": 8,
+    "equipment_needed": ["Tischtennistisch", "Baelle", "Trainingspartner"],
+    "instructions": {
+      "steps": [
+        "Trainingspartner spielt kurze Unterschnitt-Aufschlaege auf verschiedene Positionen.",
+        "Zum Tisch treten, Schlaeger offen unter den Ball fuehren.",
+        "Ball mit kontrollierter Vorwaertsbewegung kurz zurueckschupfen — Ziel: 2. Aufsprung auf Tischkante.",
+        "Abwechselnd Vorhand- und Rueckhand-Schupf ueben.",
+        "Auf minimalen Armschwung achten — hauptsaechlich Handgelenk und Fingergefuehl nutzen.",
+        "Qualitaet vor Tempo: Erst wenn 8 von 10 Baellen kurz bleiben, Schwierigkeit steigern."
+      ],
+      "sets": 3,
+      "reps": 20,
+      "rest_seconds": 25
+    },
+    "tips": [
+      "Je weniger Schwung, desto besser — der kurze Schupf lebt von der feinen Ballberuehrung.",
+      "Ball frueh nehmen, direkt nach dem Aufsprung, damit er nicht zu hoch wird.",
+      "Schlaeger nicht zu weit oeffnen, sonst fliegt der Ball hoch und gibt dem Gegner eine Angriffschance."
+    ],
+    "created_at": "2026-03-24T00:00:00Z"
+  },
+  {
+    "id": "drill-rueckschlag-flip-lang-11",
+    "name": "Rueckschlag Flip lang",
+    "description": "Aggressiver Rueckschlag durch Flippen kurzer Aufschlaege auf die gegnerische Grundlinie. Verwandelt eine passive Situation in einen aktiven Angriff.",
+    "category": "rueckschlag",
+    "difficulty": "mittel",
+    "target_weakness": ["vorhand_flip", "rueckhand_flip"],
+    "duration_minutes": 10,
+    "equipment_needed": ["Tischtennistisch", "Baelle", "Trainingspartner"],
+    "instructions": {
+      "steps": [
+        "Trainingspartner spielt kurze Aufschlaege mit wenig Schnitt auf verschiedene Positionen.",
+        "Schnell zum Tisch treten, Hand ueber den Tisch fuehren.",
+        "Ball im hoechsten Punkt mit schnellem Handgelenk-Flip nach vorne beschleunigen.",
+        "Ziel: Der Ball soll lang und flach auf die gegnerische Grundlinie fliegen.",
+        "Abwechselnd Vorhand-Flip und Rueckhand-Flip ueben.",
+        "Variation: Nach dem Flip sofort in Angriffsposition zurueck fuer den naechsten Ball."
+      ],
+      "sets": 3,
+      "reps": 15,
+      "rest_seconds": 30
+    },
+    "tips": [
+      "Timing ist wichtiger als Kraft — den Ball im richtigen Moment erwischen macht den Flip effektiv.",
+      "Hand und Schlaeger muessen ueber den Tisch reichen, sonst fehlt der richtige Winkel.",
+      "Nach dem Flip nicht stehen bleiben — sofort zurueck in Position fuer den Gegenschlag."
+    ],
+    "created_at": "2026-03-24T00:00:00Z"
+  },
+  {
+    "id": "drill-beinarbeit-sidestep-12",
+    "name": "Seitwaerts-Sidestep-Drill",
+    "description": "Grundlegendes Beinarbeitstraining mit seitlichen Sidesteps entlang der Tischkante. Verbessert die Seitwaeerts-Beweglichkeit und die Rueckkehr in die Grundstellung.",
+    "category": "beinarbeit",
+    "difficulty": "anfaenger",
+    "target_weakness": ["vorhand_topspin", "rueckhand_topspin"],
+    "duration_minutes": 6,
+    "equipment_needed": ["Tischtennistisch", "Baelle", "Trainingspartner"],
+    "instructions": {
+      "steps": [
+        "Grundstellung in der Tischmitte einnehmen, Knie gebeugt, auf Fussballen stehen.",
+        "Trainingspartner spielt abwechselnd auf Vorhand- und Rueckhandseite.",
+        "Mit Sidesteps (nie Fuesse kreuzen!) zur Ballseite bewegen.",
+        "Ball kontrolliert zurueckspielen (Konter oder leichter Topspin).",
+        "Nach jedem Schlag sofort mit Sidesteps zurueck zur Tischmitte.",
+        "30 Sekunden durchgehend, dann Pause. Tempo langsam steigern."
+      ],
+      "sets": 4,
+      "reps": 1,
+      "rest_seconds": 30
+    },
+    "tips": [
+      "Fuesse nie kreuzen — das kostet Balance und Zeit. Immer seitlich gleiten.",
+      "Kleine, schnelle Schritte sind besser als grosse, langsame.",
+      "Gewicht immer auf den Fussballen, nie auf den Fersen — so bist du sofort startbereit."
+    ],
+    "created_at": "2026-03-24T00:00:00Z"
+  },
+  {
+    "id": "drill-beinarbeit-1-2-schritt-13",
+    "name": "1-2-Schritt Vorhand-Umstellung",
+    "description": "Training des klassischen 1-2-Schritts fuer die Vorhand-Umstellung aus der Rueckhandseite. Essentiell fuer Spieler, die mit der Vorhand dominieren wollen.",
+    "category": "beinarbeit",
+    "difficulty": "mittel",
+    "target_weakness": ["vorhand_topspin", "rueckhand_topspin"],
+    "duration_minutes": 10,
+    "equipment_needed": ["Tischtennistisch", "Baelle", "Trainingspartner"],
+    "instructions": {
+      "steps": [
+        "Ausgangsposition: Rueckhandseite des Tisches (Spieler steht in Rueckhand-Ecke).",
+        "Trainingspartner spielt Ball auf die Rueckhandseite — Rueckhand spielen.",
+        "Naechster Ball kommt auf die Mitte oder Vorhandseite — jetzt den 1-2-Schritt ausfuehren.",
+        "Schritt 1: Linker Fuss setzt sich nach links (Rechtshaender), Koerper dreht sich.",
+        "Schritt 2: Rechter Fuss folgt, Koerper ist jetzt in Vorhand-Schlagposition.",
+        "Vorhand-Topspin spielen, dann mit 1-2-Schritt zurueck in Rueckhand-Position."
+      ],
+      "sets": 3,
+      "reps": 20,
+      "rest_seconds": 45
+    },
+    "tips": [
+      "Der erste Schritt (Pivot) entscheidet ueber die Qualitaet der Umstellung — er muss schnell und explosiv sein.",
+      "Oberkörper dreht sich mit den Fuessen mit, nicht erst nachtraeglich.",
+      "Uebe den 1-2-Schritt auch ohne Ball als Schattentraining, um die Bewegung zu automatisieren."
+    ],
+    "created_at": "2026-03-24T00:00:00Z"
+  },
+  {
+    "id": "drill-beinarbeit-falkenberg-14",
+    "name": "Falkenberg (3-Punkt-Beinarbeit)",
+    "description": "Der klassische Falkenberg-Drill: Rueckhand aus der Mitte, Vorhand aus der Rueckhandseite, Vorhand aus der Vorhandseite. Die Koenigsdisziplin der Tischtennis-Beinarbeit.",
+    "category": "beinarbeit",
+    "difficulty": "fortgeschritten",
+    "target_weakness": ["vorhand_topspin", "rueckhand_topspin", "vorhand_block", "rueckhand_block"],
+    "duration_minutes": 12,
+    "equipment_needed": ["Tischtennistisch", "Baelle", "Trainingspartner"],
+    "instructions": {
+      "steps": [
+        "Trainingspartner spielt in fester Reihenfolge: 1) Mitte (Rueckhand), 2) Rueckhandecke (Vorhand), 3) Vorhandecke (Vorhand).",
+        "Ball 1: Rueckhand-Topspin oder -Konter aus der Tischmitte spielen.",
+        "Ball 2: Mit schnellem Sidestep zur Rueckhandseite bewegen, Vorhand-Topspin um den Koerper herum spielen.",
+        "Ball 3: Mit grossem Schritt zur Vorhandseite wechseln, Vorhand-Topspin spielen.",
+        "Sofort zurueck zur Mitte fuer den naechsten Zyklus. Rhythmus: RH-Mitte, VH-links, VH-rechts.",
+        "Tempo langsam beginnen und erst steigern, wenn der Ablauf fehlerfrei klappt."
+      ],
+      "sets": 4,
+      "reps": 10,
+      "rest_seconds": 60
+    },
+    "tips": [
+      "Der Falkenberg ist extrem anstrengend — lieber weniger Zyklen sauber als viele unsauber.",
+      "Der schwierigste Uebergang ist von der Rueckhand-Ecke (VH) zur Vorhand-Ecke (VH) — hier explosiv abspringen.",
+      "Atme bewusst im Rhythmus: Ausatmen beim Schlag, Einatmen bei der Bewegung."
+    ],
+    "videos": [
+      {
+        "youtube_id": "placeholder_falkenberg",
+        "title": "The Falkenberg Drill Explained",
+        "channel": "ExpertTableTennis",
+        "duration_seconds": 480,
+        "language": "en"
+      }
+    ],
+    "created_at": "2026-03-24T00:00:00Z"
+  },
+  {
+    "id": "drill-taktik-platzierung-15",
+    "name": "Platzierungswechsel VH/RH",
+    "description": "Taktisches Training der gezielten Platzierungsaenderung zwischen Vorhand- und Rueckhandseite. Zwingt den Gegner in Bewegung und erzeugt Luecken.",
+    "category": "taktik",
+    "difficulty": "mittel",
+    "target_weakness": ["vorhand_topspin", "rueckhand_topspin"],
+    "duration_minutes": 10,
+    "equipment_needed": ["Tischtennistisch", "Baelle", "Trainingspartner"],
+    "instructions": {
+      "steps": [
+        "Trainingspartner blockt alle Baelle zurueck (passiv), Uebender bestimmt die Platzierung.",
+        "Muster 1: 2x Rueckhand, 1x Vorhand (Rhythmuswechsel).",
+        "Muster 2: 1x Vorhand, 1x Rueckhand (gleichmaessig diagonal wechseln).",
+        "Muster 3: 3x gleiche Seite, dann ueberraschend auf die andere Seite.",
+        "Bei jedem Platzierungswechsel auf Praezision achten — Ziel ist die Ecke, nicht die Tischmitte.",
+        "Nach 2 Minuten die Rollen tauschen: Trainingspartner platziert, Uebender blockt."
+      ],
+      "sets": 3,
+      "reps": 1,
+      "rest_seconds": 30
+    },
+    "tips": [
+      "Der Platzierungswechsel ist nur effektiv, wenn er ueberraschend kommt — gleiche Schlagbewegung, andere Richtung.",
+      "Auf den Ellbogen des Gegners zielen als dritte Option — dort ist der Umschaltpunkt VH/RH am schwierigsten.",
+      "Platzierung geht vor Tempo — ein praezise platzierter Ball mit 80% Tempo ist besser als volle Power in die Mitte."
+    ],
+    "created_at": "2026-03-24T00:00:00Z"
+  },
+  {
+    "id": "drill-taktik-dritter-ball-16",
+    "name": "Aufschlag-Dritter-Ball-Taktik",
+    "description": "Systematisches Training der Aufschlag-Dritter-Ball-Kombination. Der Aufschlag wird so geplant, dass der Rueckschlag vorhersehbar ist und mit dem dritten Ball angegriffen werden kann.",
+    "category": "taktik",
+    "difficulty": "fortgeschritten",
+    "target_weakness": ["aufschlag", "vorhand_topspin", "rueckhand_topspin"],
+    "duration_minutes": 12,
+    "equipment_needed": ["Tischtennistisch", "Baelle", "Trainingspartner"],
+    "instructions": {
+      "steps": [
+        "Kombination A: Kurzer US-Aufschlag auf RH → Gegner schupft lang → VH-Topspin Eroeffnung.",
+        "Kombination B: Kurzer SS-Aufschlag auf Mitte → Gegner flippt → schneller Block/Konter.",
+        "Kombination C: Langer TS-Aufschlag auf VH-Ecke → Gegner blockt → VH-Topspin nachsetzen.",
+        "Jede Kombination 10x hintereinander ueben, bevor zur naechsten gewechselt wird.",
+        "Trainingspartner spielt realistisch — nicht immer den gleichen Rueckschlag, aber innerhalb der Erwartung.",
+        "Bewusst entscheiden: VOR dem Aufschlag den dritten Ball planen, nicht erst reagieren."
+      ],
+      "sets": 3,
+      "reps": 10,
+      "rest_seconds": 45
+    },
+    "tips": [
+      "Der wichtigste Moment im Tischtennis: Aufschlag + dritter Ball. Hier gewinnst oder verlierst du die Initiative.",
+      "Plane VOR dem Aufschlag, was du als dritten Ball spielen willst — dann passt du den Aufschlag an.",
+      "Variiere die Kombinationen im Match — wenn der Gegner sich anpasst, wechsle die Taktik."
+    ],
+    "created_at": "2026-03-24T00:00:00Z"
+  },
+  {
+    "id": "drill-kondition-intervall-sprint-17",
+    "name": "Tisch-Intervall-Sprint",
+    "description": "Konditionelles Intervalltraining am Tischtennistisch. Simuliert die kurzen, explosiven Bewegungen eines Wettkampfes und verbessert die Ausdauer.",
+    "category": "kondition",
+    "difficulty": "anfaenger",
+    "target_weakness": ["vorhand_topspin", "rueckhand_topspin", "sonstiges"],
+    "duration_minutes": 8,
+    "equipment_needed": ["Tischtennistisch"],
+    "instructions": {
+      "steps": [
+        "Am Tischende aufstellen, Grundstellung einnehmen.",
+        "20 Sekunden: Schnelle Sidesteps von Vorhand-Ecke zu Rueckhand-Ecke und zurueck.",
+        "10 Sekunden Pause.",
+        "20 Sekunden: Schnelle Vorwaerts-Rueckwaerts-Sprints (Tischkante beruhren, 2m zurueck, wieder vor).",
+        "10 Sekunden Pause.",
+        "8 Runden im Wechsel. Intensitaet soll bei 80-90% der maximalen Geschwindigkeit liegen."
+      ],
+      "sets": 2,
+      "reps": 8,
+      "rest_seconds": 60
+    },
+    "tips": [
+      "Qualitaet der Bewegung beibehalten — lieber etwas langsamer, aber saubere Beinarbeit.",
+      "Immer auf den Fussballen bleiben, nie auf die Fersen fallen.",
+      "Ideal als Aufwaermung vor dem eigentlichen Training oder als Konditionsblock am Ende."
+    ],
+    "created_at": "2026-03-24T00:00:00Z"
+  },
+  {
+    "id": "drill-kondition-springseil-18",
+    "name": "Springseil + Schattenspiel",
+    "description": "Kombiniertes Konditions- und Koordinationstraining aus Seilspringen und Tischtennis-Schattenspiel. Verbessert Ausdauer, Beinarbeit und Schlagtechnik gleichzeitig.",
+    "category": "kondition",
+    "difficulty": "mittel",
+    "target_weakness": ["vorhand_topspin", "rueckhand_topspin", "sonstiges"],
+    "duration_minutes": 12,
+    "equipment_needed": ["Springseil", "Tischtennisschlaeger"],
+    "instructions": {
+      "steps": [
+        "Block 1 (2 Min): Seilspringen im normalen Tempo, beidbeinig.",
+        "Block 2 (1 Min): Schattenspiel — Vorhand-Topspin-Bewegung im Stand, 20x links, 20x rechts.",
+        "Block 3 (2 Min): Seilspringen mit Wechselsprung (abwechselnd links/rechts).",
+        "Block 4 (1 Min): Schattenspiel — Falkenberg-Beinarbeit ohne Ball, 10 Zyklen.",
+        "Block 5 (2 Min): Seilspringen im Sprinttempo (so schnell wie moeglich).",
+        "Block 6 (1 Min): Schattenspiel — Aufschlag + dritter Ball simulieren, 10x."
+      ],
+      "sets": 2,
+      "reps": 1,
+      "rest_seconds": 90
+    },
+    "tips": [
+      "Beim Schattenspiel die Schlagbewegung genauso sauber ausfuehren wie mit Ball — keine Abkuerzungen.",
+      "Seilspringen trainiert exakt die Fussarbeit, die du am Tisch brauchst: leichte, schnelle Fuesse.",
+      "Ideal fuer Tage, an denen kein Trainingspartner verfuegbar ist."
+    ],
+    "created_at": "2026-03-24T00:00:00Z"
+  },
+  {
+    "id": "drill-allgemein-multiball-19",
+    "name": "Multiball-Grundtraining",
+    "description": "Klassisches Multiball-Training mit Trainer oder Ballmaschine. Hohe Wiederholungszahl fuer schnellen Technikaufbau bei Anfaengern.",
+    "category": "allgemein",
+    "difficulty": "anfaenger",
+    "target_weakness": ["vorhand_topspin", "rueckhand_topspin", "vorhand_block", "rueckhand_block"],
+    "duration_minutes": 15,
+    "equipment_needed": ["Tischtennistisch", "Baelle", "Ballmaschine"],
+    "instructions": {
+      "steps": [
+        "Ballmaschine auf gleichmaessiges Tempo und mittlere Frequenz einstellen (1 Ball pro Sekunde).",
+        "Phase 1 (3 Min): Alle Baelle auf Vorhandseite — Vorhand-Topspin ueben.",
+        "Phase 2 (3 Min): Alle Baelle auf Rueckhandseite — Rueckhand-Topspin ueben.",
+        "Phase 3 (3 Min): Abwechselnd VH und RH — Umschaltbewegung trainieren.",
+        "Phase 4 (3 Min): Zufaellige Platzierung (falls Maschine das unterstuetzt) oder Trainingspartner spielt Multiball.",
+        "Fokus auf saubere Technik, nicht auf Tempo. Jeder Ball soll kontrolliert auf den Tisch kommen."
+      ],
+      "sets": 2,
+      "reps": 1,
+      "rest_seconds": 60
+    },
+    "tips": [
+      "Multiball ist das effizienteste Training fuer Technikaufbau — nirgends bekommst du mehr Wiederholungen pro Minute.",
+      "Lieber die Maschine langsamer stellen und sauber spielen als hektisch Fehler einzuueben.",
+      "Nach dem Multiball-Training immer auch freies Spiel machen, um die Technik in Spielsituationen zu uebertragen."
+    ],
+    "created_at": "2026-03-24T00:00:00Z"
+  },
+  {
+    "id": "drill-allgemein-balleimer-20",
+    "name": "Balleimertraining freies Spiel",
+    "description": "Freies Spiel mit Balleimer-Methode: Trainingspartner fuettert Baelle aus dem Eimer in variablen Situationen. Bruecke zwischen isoliertem Techniktraining und Wettkampf.",
+    "category": "allgemein",
+    "difficulty": "mittel",
+    "target_weakness": ["vorhand_topspin", "rueckhand_topspin", "vorhand_push", "rueckhand_push", "aufschlag"],
+    "duration_minutes": 15,
+    "equipment_needed": ["Tischtennistisch", "Baelle", "Trainingspartner", "Balleimer"],
+    "instructions": {
+      "steps": [
+        "Trainingspartner steht seitlich am Tisch mit einem Eimer voller Baelle (mind. 30 Stueck).",
+        "Trainingspartner spielt Baelle mit unterschiedlichem Spin, Tempo und Platzierung zu.",
+        "Uebender spielt jeden Ball so, wie er ihn im Match spielen wuerde — keine feste Vorgabe.",
+        "Trainingspartner gibt nach jedem Ballwechsel sofort den naechsten Ball ins Spiel.",
+        "Alle 2 Minuten Schwerpunkt aendern: erst nur kurze Baelle, dann nur lange, dann gemischt.",
+        "Am Ende: 3 Minuten komplett freie Zuspielung als Wettkampfsimulation."
+      ],
+      "sets": 3,
+      "reps": 1,
+      "rest_seconds": 45
+    },
+    "tips": [
+      "Der Vorteil gegenueber normalem Spiel: keine Wartezeit, sofort der naechste Ball — maximale Trainingsintensitaet.",
+      "Trainingspartner soll realistische Spielsituationen erzeugen, nicht nur einfache Baelle fuettern.",
+      "Ideal am Ende des Trainings als Uebertragung aller geuebten Techniken in spielnahe Situationen."
+    ],
+    "created_at": "2026-03-24T00:00:00Z"
+  }
+]

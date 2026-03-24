@@ -1,9 +1,14 @@
 import { createClient } from "@/lib/supabase/server";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { QuickWinsWidget } from "@/components/dashboard/quick-wins-widget";
+import { getQuickWins } from "@/lib/quick-wins";
 import Link from "next/link";
 import { Video, TrendingUp, Trophy, Dumbbell } from "lucide-react";
 import type { Metadata } from "next";
+import type { Profile, Drill } from "@/lib/types";
+
+import drillsData from "@/../data/drills.json";
 
 export const metadata: Metadata = {
   title: "Dashboard",
@@ -26,6 +31,9 @@ export default async function DashboardPage() {
   ]);
 
   const displayName = profile?.display_name || user!.email?.split("@")[0] || "Spieler";
+  const typedProfile = profile as Profile | null;
+  const drills = drillsData as Drill[];
+  const quickWins = typedProfile ? getQuickWins(typedProfile, drills) : [];
 
   return (
     <div className="space-y-6">
@@ -93,6 +101,9 @@ export default async function DashboardPage() {
           </Card>
         </Link>
       </div>
+
+      {/* Quick Wins */}
+      <QuickWinsWidget quickWins={quickWins} />
 
       {/* Recent Analyses */}
       {recentAnalyses && recentAnalyses.length > 0 && (
