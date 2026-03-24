@@ -17,7 +17,12 @@ export default async function ProfilPage() {
     .eq('id', user!.id)
     .single()
 
-  const profile = data as Profile
+  const profile = {
+    ...data,
+    weaknesses: data?.weaknesses ?? [],
+    strengths: data?.strengths ?? [],
+    goals: data?.goals ?? [],
+  } as Profile
 
   return (
     <div className="space-y-6">

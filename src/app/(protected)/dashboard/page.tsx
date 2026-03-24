@@ -31,7 +31,12 @@ export default async function DashboardPage() {
   ]);
 
   const displayName = profile?.display_name || user!.email?.split("@")[0] || "Spieler";
-  const typedProfile = profile as Profile | null;
+  const typedProfile = profile ? {
+    ...profile,
+    weaknesses: profile.weaknesses ?? [],
+    strengths: profile.strengths ?? [],
+    goals: profile.goals ?? [],
+  } as Profile : null;
   const drills = drillsData as Drill[];
   const quickWins = typedProfile ? getQuickWins(typedProfile, drills) : [];
 

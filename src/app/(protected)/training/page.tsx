@@ -23,7 +23,14 @@ export default async function TrainingPage() {
       .select('*')
       .eq('id', user.id)
       .single()
-    profile = data as Profile | null
+    if (data) {
+      profile = {
+        ...data,
+        weaknesses: data.weaknesses ?? [],
+        strengths: data.strengths ?? [],
+        goals: data.goals ?? [],
+      } as Profile
+    }
   }
 
   const drills = drillsData as Drill[]

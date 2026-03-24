@@ -10,7 +10,9 @@ const playerTypeCategories: Record<PlayerType, DrillCategory[]> = {
 
 export function getQuickWins(profile: Profile, drills: Drill[]): QuickWin[] {
   const allowedDifficulties = getAllowedDifficulties(profile.ttr_rating)
-  const preferredCategories = playerTypeCategories[profile.player_type]
+  const preferredCategories = playerTypeCategories[profile.player_type] || []
+  const weaknesses = profile.weaknesses ?? []
+  const strengths = profile.strengths ?? []
 
   const scored = drills
     .filter((drill) => allowedDifficulties.includes(drill.difficulty))
@@ -20,7 +22,7 @@ export function getQuickWins(profile: Profile, drills: Drill[]): QuickWin[] {
 
       // +3 if drill targets a player weakness
       const matchedWeakness = drill.target_weakness.find((tw) =>
-        profile.weaknesses.includes(tw)
+        weaknesses.includes(tw)
       )
       if (matchedWeakness) {
         score += 3
@@ -34,12 +36,12 @@ export function getQuickWins(profile: Profile, drills: Drill[]): QuickWin[] {
       }
 
       // +1 if category is NOT in strengths
-      if (!profile.strengths.includes(drill.category)) {
+      if (!strengths.includes(drill.category)) {
         score += 1
       }
 
       // -1 if category is in strengths (already strong)
-      if (profile.strengths.includes(drill.category)) {
+      if (strengths.includes(drill.category)) {
         score -= 1
       }
 
