@@ -163,7 +163,26 @@ export async function analyseWithGemini(request: AnalyseRequest) {
 
   const prompt = buildPrompt(request, isRallyAnalysis);
 
-  // Always use File API — simpler code path, works for all sizes
+  // < 20MB: inline base64 (faster, no upload/polling overhead)
+  // >= 20MB: File API (required for large files)
+  const INLINE_THRESHOLD = 20 * 1024 * 1024;
+
+  if (request.videoBuffer.length < INLINE_THRESHOLD) {
+    console.log("[Gemini] Inline mode, size:", request.videoBuffer.length, "bytes");
+    const result = await model.generateContent([
+      prompt,
+      {
+        inlineData: {
+          data: request.videoBuffer.toString("base64"),
+          mimeType: request.videoMimeType,
+        },
+      },
+    ]);
+    return safeParseGeminiResponse(result);
+  }
+
+  // Large files: use File API with upload + polling
+  console.log("[Gemini] File API mode, size:", request.videoBuffer.length, "bytes");
   const uploadResult = await uploadVideoToFileAPI(request.videoBuffer, request.videoMimeType);
 
   const result = await model.generateContent([
