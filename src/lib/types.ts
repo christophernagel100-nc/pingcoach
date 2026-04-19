@@ -85,8 +85,21 @@ export interface Keypoint {
   visibility: number
 }
 
+export interface RallyFeedback {
+  number: number
+  start_time: string
+  end_time: string
+  stroke_types: string[]
+  score: number
+  feedback: string
+  highlight: boolean
+}
+
 export interface StructuredFeedback {
   summary: string
+  match_summary?: string
+  overall_score?: number
+  rallies?: RallyFeedback[]
   strengths: string[]
   weaknesses: FeedbackItem[]
   drills: DrillRecommendation[]

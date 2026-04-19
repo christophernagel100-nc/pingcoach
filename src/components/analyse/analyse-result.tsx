@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   TrendingUp,
@@ -7,12 +8,17 @@ import {
   CheckCircle2,
   Target,
   Dumbbell,
+  Play,
+  Star,
+  ChevronDown,
+  ChevronUp,
 } from "lucide-react";
-import type { StructuredFeedback } from "@/lib/types";
+import type { StructuredFeedback, RallyFeedback } from "@/lib/types";
 
 interface AnalyseResultProps {
   feedback: StructuredFeedback;
   analysisId: string | null;
+  videoUrl?: string | null;
 }
 
 function ScoreCircle({ score, label }: { score: number; label: string }) {
@@ -37,36 +43,170 @@ function ScoreCircle({ score, label }: { score: number; label: string }) {
   );
 }
 
-export function AnalyseResult({ feedback, analysisId }: AnalyseResultProps) {
+function ScoreBadge({ score }: { score: number }) {
+  const color =
+    score >= 75 ? "text-emerald bg-emerald/10" : score >= 50 ? "text-warning bg-warning/10" : "text-destructive bg-destructive/10";
+  return (
+    <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${color}`}>
+      {score}
+    </span>
+  );
+}
+
+function RallyCard({
+  rally,
+  videoUrl,
+}: {
+  rally: RallyFeedback;
+  videoUrl?: string | null;
+}) {
+  const [expanded, setExpanded] = useState(false);
+
+  const handleJumpToVideo = () => {
+    if (!videoUrl) return;
+    const videoEl = document.querySelector<HTMLVideoElement>("video[data-analyse-player]");
+    if (!videoEl) return;
+    // Parse MM:SS timestamp
+    const parts = rally.start_time.split(":");
+    const seconds = parseInt(parts[0]) * 60 + parseInt(parts[1]);
+    videoEl.currentTime = seconds;
+    videoEl.play();
+  };
+
+  return (
+    <div
+      className={`p-3 rounded-lg border transition-colors ${
+        rally.highlight
+          ? "bg-emerald/5 border-emerald/20"
+          : "bg-white/[0.02] border-white/[0.04]"
+      }`}
+    >
+      <button
+        onClick={() => setExpanded(!expanded)}
+        className="w-full flex items-center gap-3 cursor-pointer"
+      >
+        <span className="w-7 h-7 rounded-full bg-white/[0.06] flex items-center justify-center text-xs font-bold text-text-secondary shrink-0">
+          {rally.number}
+        </span>
+        <div className="flex-1 text-left">
+          <div className="flex items-center gap-2">
+            <span className="text-sm font-medium">
+              {rally.start_time} — {rally.end_time}
+            </span>
+            {rally.highlight && <Star className="w-3 h-3 text-amber-400 fill-amber-400" />}
+            <ScoreBadge score={rally.score} />
+          </div>
+          <div className="flex gap-1 mt-1 flex-wrap">
+            {rally.stroke_types.map((st, i) => (
+              <span
+                key={i}
+                className="text-[10px] px-1.5 py-0.5 rounded bg-white/[0.06] text-text-muted"
+              >
+                {formatStrokeType(st)}
+              </span>
+            ))}
+          </div>
+        </div>
+        {expanded ? (
+          <ChevronUp className="w-4 h-4 text-text-muted shrink-0" />
+        ) : (
+          <ChevronDown className="w-4 h-4 text-text-muted shrink-0" />
+        )}
+      </button>
+
+      {expanded && (
+        <div className="mt-3 pl-10 space-y-2">
+          <p className="text-sm text-text-secondary">{rally.feedback}</p>
+          {videoUrl && (
+            <button
+              onClick={handleJumpToVideo}
+              className="flex items-center gap-1 text-xs text-emerald hover:underline cursor-pointer"
+            >
+              <Play className="w-3 h-3" />
+              Im Video anschauen
+            </button>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
+export function AnalyseResult({ feedback, analysisId, videoUrl }: AnalyseResultProps) {
+  const hasRallies = feedback.rallies && feedback.rallies.length > 0;
+  const overallScore = feedback.overall_score
+    ?? (feedback.score_breakdown
+      ? Math.round(
+          Object.values(feedback.score_breakdown).reduce((a, b) => a + b, 0) /
+          Object.values(feedback.score_breakdown).length
+        )
+      : null);
+
   return (
     <div className="space-y-5">
-      {/* Overall Score */}
+      {/* Video Player (for rally jumping) */}
+      {videoUrl && hasRallies && (
+        <Card className="bg-surface-2 border-white/[0.06]">
+          <CardContent className="pt-4 pb-4">
+            <video
+              data-analyse-player
+              src={videoUrl}
+              className="w-full max-h-[300px] object-contain rounded-lg"
+              controls
+              playsInline
+              preload="auto"
+            />
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Overall Score + Summary */}
       <Card className="bg-surface-2 border-white/[0.06] glow-emerald">
         <CardContent className="pt-6">
           <div className="flex items-center gap-6">
             <div className="flex flex-col items-center">
               <div className="w-24 h-24 rounded-full bg-emerald/10 flex items-center justify-center border-2 border-emerald/30">
                 <span className="text-3xl font-bold text-emerald">
-                  {feedback.score_breakdown
-                    ? Math.round(
-                        Object.values(feedback.score_breakdown).reduce(
-                          (a, b) => a + b, 0
-                        ) / Object.values(feedback.score_breakdown).length
-                      )
-                    : "—"}
+                  {overallScore ?? "—"}
                 </span>
               </div>
               <span className="text-sm text-text-muted mt-2">Gesamt</span>
             </div>
             <div className="flex-1">
-              <h3 className="text-lg font-semibold mb-1">Analyse-Ergebnis</h3>
+              <h3 className="text-lg font-semibold mb-1">
+                {hasRallies ? "Spiel-Analyse" : "Analyse-Ergebnis"}
+              </h3>
               <p className="text-text-secondary text-sm leading-relaxed">
-                {feedback.summary}
+                {feedback.match_summary || feedback.summary}
               </p>
+              {hasRallies && (
+                <p className="text-xs text-text-muted mt-2">
+                  {feedback.rallies!.length} Ballwechsel erkannt
+                  {feedback.rallies!.filter((r) => r.highlight).length > 0 &&
+                    ` · ${feedback.rallies!.filter((r) => r.highlight).length} Highlights`}
+                </p>
+              )}
             </div>
           </div>
         </CardContent>
       </Card>
+
+      {/* Rally Timeline */}
+      {hasRallies && (
+        <Card className="bg-surface-2 border-white/[0.06]">
+          <CardHeader>
+            <CardTitle className="text-base flex items-center gap-2">
+              <Play className="w-4 h-4 text-cyan" />
+              Ballwechsel
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-2">
+            {feedback.rallies!.map((rally) => (
+              <RallyCard key={rally.number} rally={rally} videoUrl={videoUrl} />
+            ))}
+          </CardContent>
+        </Card>
+      )}
 
       {/* Score Breakdown */}
       {feedback.score_breakdown && (
@@ -199,4 +339,20 @@ function formatLabel(key: string): string {
     timing: "Timing",
   };
   return labels[key] || key;
+}
+
+function formatStrokeType(st: string): string {
+  const labels: Record<string, string> = {
+    vorhand_topspin: "VH Topspin",
+    rueckhand_topspin: "RH Topspin",
+    vorhand_push: "VH Push",
+    rueckhand_push: "RH Push",
+    vorhand_block: "VH Block",
+    rueckhand_block: "RH Block",
+    vorhand_flip: "VH Flip",
+    rueckhand_flip: "RH Flip",
+    aufschlag: "Aufschlag",
+    sonstiges: "Sonstiges",
+  };
+  return labels[st] || st;
 }

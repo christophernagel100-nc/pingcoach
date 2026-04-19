@@ -1,14 +1,48 @@
 import { GoogleAIFileManager } from "@google/generative-ai/server";
 import { GoogleGenerativeAI } from "@google/generative-ai";
+import type { GenerateContentResult } from "@google/generative-ai";
 import fs from "fs";
 import os from "os";
 import path from "path";
+import crypto from "crypto";
 
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
-const fileManager = new GoogleAIFileManager(process.env.GEMINI_API_KEY!);
+// Lazy initialization — crashes at import if GEMINI_API_KEY is missing
+let _genAI: GoogleGenerativeAI | null = null;
+let _fileManager: GoogleAIFileManager | null = null;
 
-const COACHING_SYSTEM_PROMPT = `Du bist PingCoach, ein erfahrener Tischtennis-Trainer und Biomechanik-Experte.
-Du analysierst Videos von Tischtennis-Spielern und gibst konkretes, umsetzbares Coaching-Feedback auf Deutsch.
+function getGenAI(): GoogleGenerativeAI {
+  if (!_genAI) {
+    const key = process.env.GEMINI_API_KEY;
+    if (!key) throw new GeminiConfigError("GEMINI_API_KEY ist nicht konfiguriert");
+    _genAI = new GoogleGenerativeAI(key);
+  }
+  return _genAI;
+}
+
+function getFileManager(): GoogleAIFileManager {
+  if (!_fileManager) {
+    const key = process.env.GEMINI_API_KEY;
+    if (!key) throw new GeminiConfigError("GEMINI_API_KEY ist nicht konfiguriert");
+    _fileManager = new GoogleAIFileManager(key);
+  }
+  return _fileManager;
+}
+
+// Error classes for specific failure modes
+export class GeminiConfigError extends Error {
+  constructor(msg: string) { super(msg); this.name = "GeminiConfigError"; }
+}
+export class GeminiTimeoutError extends Error {
+  constructor(msg: string) { super(msg); this.name = "GeminiTimeoutError"; }
+}
+export class GeminiParseError extends Error {
+  constructor(msg: string) { super(msg); this.name = "GeminiParseError"; }
+}
+
+// --- Prompts ---
+
+const SINGLE_STROKE_PROMPT = `Du bist PingCoach, ein erfahrener Tischtennis-Trainer und Biomechanik-Experte.
+Du analysierst ein kurzes Video eines einzelnen Schlags oder einer kurzen Uebungssequenz.
 
 REGELN:
 - Sei konkret und spezifisch, keine generischen Tipps
@@ -16,9 +50,8 @@ REGELN:
 - Gib maximal 3 Hauptverbesserungen (Prioritaet: groesster Impact zuerst)
 - Empfehle passende Uebungen fuer jede Schwaeche
 - Lobe was gut ist — Spieler brauchen auch positive Bestaerkung
-- Passe dein Feedback an das Spieler-Level an (Anfaenger vs. Vereinsspieler)
+- Passe dein Feedback an das Spieler-Level an
 - Achte besonders auf: Schlaegerhaltung, Koerperhaltung, Beinarbeit, Ausschwung, Timing, Gewichtsverlagerung
-- Antworte IMMER im folgenden JSON-Format
 
 ANTWORT-FORMAT (valides JSON):
 {
@@ -47,6 +80,64 @@ ANTWORT-FORMAT (valides JSON):
   }
 }`;
 
+const RALLY_ANALYSIS_PROMPT = `Du bist PingCoach, ein erfahrener Tischtennis-Trainer und Biomechanik-Experte.
+Du analysierst ein laengeres Video das mehrere Ballwechsel (Rallys) enthaelt.
+
+DEINE AUFGABEN:
+1. Erkenne alle einzelnen Ballwechsel im Video (Rally = von Aufschlag bis Punktende)
+2. Gib eine Gesamtbewertung des Spiels/Trainings
+3. Analysiere jeden Ballwechsel einzeln
+4. Identifiziere die Top-3 Verbesserungsbereiche ueber alle Rallys
+
+REGELN:
+- Timestamps im Format MM:SS (z.B. "00:15" fuer Sekunde 15)
+- Wenn kein klarer Aufschlag erkennbar ist, nutze Spielunterbrechungen als Rally-Grenzen
+- Markiere besonders gute oder lehrreiche Rallys als "highlight: true"
+- Sei konkret bei jedem Rally-Feedback (nicht wiederholen, was schon gesagt wurde)
+- Passe dein Feedback an das Spieler-Level an
+- Achte besonders auf: Schlaegerhaltung, Koerperhaltung, Beinarbeit, Ausschwung, Timing, Gewichtsverlagerung
+
+ANTWORT-FORMAT (valides JSON):
+{
+  "match_summary": "Ueberblick ueber das Spiel/Training in 2-3 Saetzen",
+  "summary": "1 Satz Kernaussage",
+  "overall_score": 0-100,
+  "rallies": [
+    {
+      "number": 1,
+      "start_time": "00:05",
+      "end_time": "00:12",
+      "stroke_types": ["vorhand_topspin", "rueckhand_block"],
+      "score": 0-100,
+      "feedback": "Konkretes Feedback zu dieser Rally",
+      "highlight": false
+    }
+  ],
+  "strengths": ["Staerke 1", "Staerke 2"],
+  "weaknesses": [
+    {
+      "area": "z.B. Rueckhand-Topspin",
+      "description": "Was genau verbessert werden muss",
+      "severity": "leicht|mittel|schwer",
+      "fix_suggestion": "Konkrete Anleitung"
+    }
+  ],
+  "drills": [
+    {
+      "name": "Name der Uebung",
+      "reason": "Warum diese Uebung hilft"
+    }
+  ],
+  "score_breakdown": {
+    "koerperhaltung": 0-100,
+    "schlagbewegung": 0-100,
+    "beinarbeit": 0-100,
+    "timing": 0-100
+  }
+}`;
+
+// --- Main Analysis Function ---
+
 export interface AnalyseRequest {
   videoBuffer: Buffer;
   videoMimeType: string;
@@ -54,87 +145,164 @@ export interface AnalyseRequest {
   playerLevel?: string;
   playerWeaknesses?: string[];
   analysisType?: string;
+  videoDurationSeconds?: number;
 }
 
 export async function analyseWithGemini(request: AnalyseRequest) {
-  const model = genAI.getGenerativeModel({
-    model: "gemini-2.0-flash",
+  const isRallyAnalysis = (request.videoDurationSeconds ?? 0) > 30;
+
+  const model = getGenAI().getGenerativeModel({
+    model: "gemini-2.5-flash",
     generationConfig: {
       temperature: 0.3,
-      maxOutputTokens: 2048,
+      maxOutputTokens: 8192,
       responseMimeType: "application/json",
     },
-    systemInstruction: COACHING_SYSTEM_PROMPT,
+    systemInstruction: isRallyAnalysis ? RALLY_ANALYSIS_PROMPT : SINGLE_STROKE_PROMPT,
   });
 
-  const prompt = buildPrompt(request);
+  const prompt = buildPrompt(request, isRallyAnalysis);
 
-  // For videos > 15MB use File API, otherwise inline
-  if (request.videoBuffer.length > 15 * 1024 * 1024) {
-    const uploadResult = await uploadVideoToFileAPI(request.videoBuffer, request.videoMimeType);
-    const result = await model.generateContent([
-      prompt,
-      {
-        fileData: {
-          fileUri: uploadResult.uri,
-          mimeType: uploadResult.mimeType,
-        },
-      },
-    ]);
-    return JSON.parse(result.response.text());
-  }
+  // Always use File API — simpler code path, works for all sizes
+  const uploadResult = await uploadVideoToFileAPI(request.videoBuffer, request.videoMimeType);
 
-  // Inline for smaller videos
   const result = await model.generateContent([
     prompt,
     {
-      inlineData: {
-        data: request.videoBuffer.toString("base64"),
-        mimeType: request.videoMimeType,
+      fileData: {
+        fileUri: uploadResult.uri,
+        mimeType: uploadResult.mimeType,
       },
     },
   ]);
 
-  return JSON.parse(result.response.text());
+  return safeParseGeminiResponse(result);
 }
 
+// --- Safe JSON Parsing ---
+
+function safeParseGeminiResponse(result: GenerateContentResult): Record<string, unknown> {
+  let text: string;
+  try {
+    text = result.response.text();
+  } catch (err) {
+    throw new GeminiParseError(`Gemini hat keine Antwort geliefert: ${err}`);
+  }
+
+  if (!text || text.trim().length === 0) {
+    throw new GeminiParseError("Gemini hat eine leere Antwort geliefert");
+  }
+
+  // Strip markdown fences if present
+  let cleaned = text.trim();
+  if (cleaned.startsWith("```json")) {
+    cleaned = cleaned.slice(7);
+  } else if (cleaned.startsWith("```")) {
+    cleaned = cleaned.slice(3);
+  }
+  if (cleaned.endsWith("```")) {
+    cleaned = cleaned.slice(0, -3);
+  }
+  cleaned = cleaned.trim();
+
+  // Try direct parse
+  try {
+    const parsed = JSON.parse(cleaned);
+    return validateFeedback(parsed);
+  } catch {
+    // Fallback: extract first JSON object
+    const match = cleaned.match(/\{[\s\S]*\}/);
+    if (match) {
+      try {
+        const parsed = JSON.parse(match[0]);
+        return validateFeedback(parsed);
+      } catch {
+        // Fall through to error
+      }
+    }
+    throw new GeminiParseError(
+      `Gemini hat ungueltiges JSON geliefert. Anfang der Antwort: "${text.slice(0, 200)}"`
+    );
+  }
+}
+
+function validateFeedback(data: Record<string, unknown>): Record<string, unknown> {
+  // Ensure required fields exist with sensible defaults
+  if (!data.summary || typeof data.summary !== "string") {
+    data.summary = "Analyse konnte nicht vollstaendig ausgewertet werden.";
+  }
+  if (typeof data.overall_score !== "number" || data.overall_score < 0 || data.overall_score > 100) {
+    data.overall_score = 50;
+  }
+  if (!Array.isArray(data.strengths)) {
+    data.strengths = [];
+  }
+  if (!Array.isArray(data.weaknesses)) {
+    data.weaknesses = [];
+  }
+  if (!Array.isArray(data.drills)) {
+    data.drills = [];
+  }
+  if (!data.score_breakdown || typeof data.score_breakdown !== "object") {
+    data.score_breakdown = { koerperhaltung: 50, schlagbewegung: 50, beinarbeit: 50, timing: 50 };
+  }
+  return data;
+}
+
+// --- File API Upload with bounded polling ---
+
+const MAX_POLL_ATTEMPTS = 40;
+
 async function uploadVideoToFileAPI(buffer: Buffer, mimeType: string) {
-  const tmpPath = path.join(os.tmpdir(), `pingcoach-${Date.now()}.mp4`);
+  if (buffer.length > 50 * 1024 * 1024) {
+    throw new Error("Video zu gross fuer die Analyse (max. 50 MB)");
+  }
+
+  const tmpPath = path.join(os.tmpdir(), `pingcoach-${crypto.randomUUID()}.mp4`);
   fs.writeFileSync(tmpPath, buffer);
 
   try {
-    const uploadResult = await fileManager.uploadFile(tmpPath, {
+    const uploadResult = await getFileManager().uploadFile(tmpPath, {
       mimeType,
       displayName: `PingCoach Analyse ${new Date().toISOString()}`,
     });
 
-    // Wait for processing
+    // Poll for processing completion with max attempts
     let file = uploadResult.file;
+    let attempts = 0;
     while (file.state === "PROCESSING") {
+      if (++attempts > MAX_POLL_ATTEMPTS) {
+        throw new GeminiTimeoutError("Video-Verarbeitung bei Gemini dauert zu lange. Bitte versuche es mit einem kuerzeren Video.");
+      }
       await new Promise((r) => setTimeout(r, 1000));
-      const check = await fileManager.getFile(file.name);
-      file = check;
+      file = await getFileManager().getFile(file.name);
     }
 
     if (file.state === "FAILED") {
-      throw new Error("Video-Verarbeitung bei Gemini fehlgeschlagen");
+      throw new Error("Video-Verarbeitung bei Gemini fehlgeschlagen. Bitte versuche ein anderes Video-Format.");
     }
 
     return { uri: file.uri, mimeType: file.mimeType };
   } finally {
-    fs.unlinkSync(tmpPath);
+    // Always clean up temp file
+    try { fs.unlinkSync(tmpPath); } catch { /* ignore cleanup errors */ }
   }
 }
 
-function buildPrompt(request: AnalyseRequest): string {
-  const { strokeType, playerLevel, playerWeaknesses, analysisType } = request;
+// --- Prompt Builder ---
 
-  let prompt = `Analysiere das folgende Tischtennis-Video:\n\n`;
+function buildPrompt(request: AnalyseRequest, isRallyAnalysis: boolean): string {
+  const { strokeType, playerLevel, playerWeaknesses, analysisType, videoDurationSeconds } = request;
 
-  if (strokeType) prompt += `Schlagtyp: ${strokeType}\n`;
+  let prompt = isRallyAnalysis
+    ? "Analysiere das folgende Tischtennis-Video und identifiziere alle Ballwechsel:\n\n"
+    : "Analysiere den folgenden Tischtennis-Schlag:\n\n";
+
+  if (strokeType && !isRallyAnalysis) prompt += `Schlagtyp: ${strokeType}\n`;
   if (playerLevel) prompt += `Spieler-Level: ${playerLevel}\n`;
   if (playerWeaknesses?.length) prompt += `Bekannte Schwaechen: ${playerWeaknesses.join(", ")}\n`;
   if (analysisType) prompt += `Analyse-Typ: ${analysisType}\n`;
+  if (videoDurationSeconds) prompt += `Video-Laenge: ${Math.round(videoDurationSeconds)} Sekunden\n`;
 
   prompt += `\nBitte analysiere die Technik im Video und achte besonders auf Koerperhaltung, Schlagbewegung, Beinarbeit und Timing.`;
 
