@@ -170,7 +170,8 @@ export interface AnalyseRequest {
 }
 
 export async function analyseWithGemini(request: AnalyseRequest) {
-  const isRallyAnalysis = !!(request.detectedRallies && request.detectedRallies.length > 0);
+  const hasDetectedRallies = !!(request.detectedRallies && request.detectedRallies.length > 0);
+  const isRallyAnalysis = hasDetectedRallies || (request.videoDurationSeconds ?? 0) > 30;
 
   const model = getGenAI().getGenerativeModel({
     model: "gemini-2.5-flash",
@@ -353,6 +354,15 @@ Fuer JEDEN dieser ${detectedRallies.length} Ballwechsel:
 4. Gib konkretes Coaching-Feedback
 
 WICHTIG: Verwende genau die ${detectedRallies.length} Rallys mit den angegebenen Timestamps. Erfinde KEINE eigenen Timestamps.\n\n`;
+  } else if (isRallyAnalysis) {
+    // Long video but no pre-detected rallies — let Gemini try
+    const expectedRallies = videoDurationSeconds
+      ? `Bei ${Math.round(videoDurationSeconds)} Sekunden Video erwarte ich ca. ${Math.max(3, Math.round(videoDurationSeconds / 10))}-${Math.round(videoDurationSeconds / 6)} Ballwechsel.`
+      : "";
+
+    prompt = `Analysiere das folgende Tischtennis-Video und identifiziere JEDEN einzelnen Ballwechsel.
+${expectedRallies}
+Schau dir das Video Sekunde fuer Sekunde an. Ueberspringe NICHTS.\n\n`;
   } else {
     prompt = "Analysiere den folgenden Tischtennis-Schlag:\n\n";
   }

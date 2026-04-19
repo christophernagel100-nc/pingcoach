@@ -130,7 +130,7 @@ export function VideoAnalyser() {
           storagePath,
           mimeType,
           strokeType,
-          analysisType: rallies.length > 0 ? "match" : "einzelschlag",
+          analysisType: (videoDuration ?? 0) > 30 ? "match" : "einzelschlag",
           videoDurationSeconds: videoDuration,
           detectedRallies: rallies.length > 0
             ? rallies.map((r) => ({ number: r.number, startTime: r.startTime, endTime: r.endTime }))
