@@ -24,6 +24,16 @@ const STROKE_TYPES = [
   { value: "sonstiges", label: "Sonstiges / Ganzes Spiel" },
 ];
 
+const DRILL_TYPES = [
+  { value: "vh_topspin_uebung", label: "VH Topspin Uebung" },
+  { value: "rh_topspin_uebung", label: "RH Topspin Uebung" },
+  { value: "vh_rh_topspin", label: "VH + RH Topspin" },
+  { value: "aufschlag_rueckschlag", label: "Aufschlag + Rueckschlag" },
+  { value: "multiball", label: "Multiball-Training" },
+  { value: "freies_spiel", label: "Freies Spiel / Match" },
+  { value: "sonstiges", label: "Sonstiges" },
+];
+
 const MAX_FILE_SIZE_MB = 50;
 const MAX_DURATION_SECONDS = 300; // 5 Minuten
 const MAX_RETRIES = 2;
@@ -37,6 +47,7 @@ export function VideoAnalyser() {
   const [videoUrl, setVideoUrl] = useState<string | null>(null);
   const [videoDuration, setVideoDuration] = useState<number | null>(null);
   const [strokeType, setStrokeType] = useState("vorhand_topspin");
+  const [drillType, setDrillType] = useState("freies_spiel");
   const [result, setResult] = useState<StructuredFeedback | null>(null);
   const [analysisId, setAnalysisId] = useState<string | null>(null);
   const [consentGiven, setConsentGiven] = useState(false);
@@ -130,6 +141,7 @@ export function VideoAnalyser() {
           storagePath,
           mimeType,
           strokeType,
+          drillType: (videoDuration ?? 0) > 30 ? drillType : undefined,
           analysisType: (videoDuration ?? 0) > 30 ? "match" : "einzelschlag",
           videoDurationSeconds: videoDuration,
           detectedRallies: rallies.length > 0
@@ -392,11 +404,29 @@ export function VideoAnalyser() {
               </div>
             )}
 
-            {/* Info for rally analysis */}
+            {/* Drill type selection — for rally videos */}
             {(videoDuration ?? 0) > 30 && (
-              <div className="p-3 rounded-lg bg-emerald/5 border border-emerald/20">
-                <p className="text-sm text-emerald">
-                  Rally-Analyse: Die KI erkennt automatisch alle Ballwechsel und analysiert jeden einzeln.
+              <div>
+                <label className="text-sm font-medium text-text-secondary mb-2 block">
+                  Was fuer ein Training ist das?
+                </label>
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                  {DRILL_TYPES.map((dt) => (
+                    <button
+                      key={dt.value}
+                      onClick={() => setDrillType(dt.value)}
+                      className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors cursor-pointer ${
+                        drillType === dt.value
+                          ? "bg-cyan/20 text-cyan border border-cyan/30"
+                          : "bg-white/[0.04] text-text-secondary border border-white/[0.06] hover:border-white/[0.12]"
+                      }`}
+                    >
+                      {dt.label}
+                    </button>
+                  ))}
+                </div>
+                <p className="text-xs text-text-muted mt-2">
+                  Hilft der KI, die richtigen Schlaege zu erkennen.
                 </p>
               </div>
             )}

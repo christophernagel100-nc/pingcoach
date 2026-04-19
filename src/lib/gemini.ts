@@ -162,6 +162,7 @@ export interface AnalyseRequest {
   videoBuffer: Buffer;
   videoMimeType: string;
   strokeType?: string;
+  drillType?: string;
   playerLevel?: string;
   playerWeaknesses?: string[];
   analysisType?: string;
@@ -333,7 +334,7 @@ async function uploadVideoToFileAPI(buffer: Buffer, mimeType: string) {
 // --- Prompt Builder ---
 
 function buildPrompt(request: AnalyseRequest, isRallyAnalysis: boolean): string {
-  const { strokeType, playerLevel, playerWeaknesses, analysisType, videoDurationSeconds, detectedRallies } = request;
+  const { strokeType, drillType, playerLevel, playerWeaknesses, analysisType, videoDurationSeconds, detectedRallies } = request;
 
   let prompt: string;
 
@@ -368,11 +369,13 @@ Schau dir das Video Sekunde fuer Sekunde an. Ueberspringe NICHTS.\n\n`;
   }
 
   if (strokeType && !isRallyAnalysis) prompt += `Schlagtyp: ${strokeType}\n`;
+  if (drillType) prompt += `Uebungstyp: ${drillType}\n`;
   if (playerLevel) prompt += `Spieler-Level: ${playerLevel}\n`;
   if (playerWeaknesses?.length) prompt += `Bekannte Schwaechen: ${playerWeaknesses.join(", ")}\n`;
   if (analysisType) prompt += `Analyse-Typ: ${analysisType}\n`;
   if (videoDurationSeconds) prompt += `Video-Laenge: ${Math.round(videoDurationSeconds)} Sekunden\n`;
 
+  prompt += `\nWICHTIG: Beschreibe NUR Schlaege die du tatsaechlich im Video siehst. Erfinde KEINE Schlagtypen. Wenn du dir unsicher bist, sage "nicht eindeutig erkennbar".`;
   prompt += `\nBitte analysiere die Technik im Video und achte besonders auf Koerperhaltung, Schlagbewegung, Beinarbeit und Timing.`;
 
   return prompt;
