@@ -152,6 +152,12 @@ ANTWORT-FORMAT (valides JSON):
 
 // --- Main Analysis Function ---
 
+export interface RallyTimestamp {
+  number: number;
+  startTime: string;
+  endTime: string;
+}
+
 export interface AnalyseRequest {
   videoBuffer: Buffer;
   videoMimeType: string;
@@ -160,10 +166,11 @@ export interface AnalyseRequest {
   playerWeaknesses?: string[];
   analysisType?: string;
   videoDurationSeconds?: number;
+  detectedRallies?: RallyTimestamp[];
 }
 
 export async function analyseWithGemini(request: AnalyseRequest) {
-  const isRallyAnalysis = (request.videoDurationSeconds ?? 0) > 30;
+  const isRallyAnalysis = !!(request.detectedRallies && request.detectedRallies.length > 0);
 
   const model = getGenAI().getGenerativeModel({
     model: "gemini-2.5-flash",
@@ -325,18 +332,27 @@ async function uploadVideoToFileAPI(buffer: Buffer, mimeType: string) {
 // --- Prompt Builder ---
 
 function buildPrompt(request: AnalyseRequest, isRallyAnalysis: boolean): string {
-  const { strokeType, playerLevel, playerWeaknesses, analysisType, videoDurationSeconds } = request;
+  const { strokeType, playerLevel, playerWeaknesses, analysisType, videoDurationSeconds, detectedRallies } = request;
 
   let prompt: string;
 
-  if (isRallyAnalysis) {
-    const expectedRallies = videoDurationSeconds
-      ? `Bei ${Math.round(videoDurationSeconds)} Sekunden Video erwarte ich ca. ${Math.max(3, Math.round(videoDurationSeconds / 10))}-${Math.round(videoDurationSeconds / 6)} Ballwechsel.`
-      : "";
+  if (isRallyAnalysis && detectedRallies && detectedRallies.length > 0) {
+    // Rally-Timestamps from audio detection — Gemini only needs to ANALYZE, not detect
+    const rallyList = detectedRallies
+      .map((r) => `  Rally ${r.number}: ${r.startTime} - ${r.endTime}`)
+      .join("\n");
 
-    prompt = `Analysiere das folgende Tischtennis-Video und identifiziere JEDEN einzelnen Ballwechsel.
-${expectedRallies}
-Schau dir das Video Sekunde fuer Sekunde an. Ueberspringe NICHTS.\n\n`;
+    prompt = `Analysiere das folgende Tischtennis-Video. Die Ballwechsel wurden bereits per Audio-Analyse erkannt:
+
+${rallyList}
+
+Fuer JEDEN dieser ${detectedRallies.length} Ballwechsel:
+1. Schau dir das Video-Segment genau an
+2. Erkenne welche Schlagtypen vorkommen (Topspin, Push, Block, Flip, Aufschlag)
+3. Bewerte die Technik (Score 0-100)
+4. Gib konkretes Coaching-Feedback
+
+WICHTIG: Verwende genau die ${detectedRallies.length} Rallys mit den angegebenen Timestamps. Erfinde KEINE eigenen Timestamps.\n\n`;
   } else {
     prompt = "Analysiere den folgenden Tischtennis-Schlag:\n\n";
   }

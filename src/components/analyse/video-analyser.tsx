@@ -7,6 +7,7 @@ import { toast } from "sonner";
 import { Upload, Video, Loader2, Camera, RotateCcw } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { shouldCompress, compressVideo, type CompressProgress } from "@/lib/video-compress";
+import { detectRallies, type DetectedRally } from "@/lib/rally-detection";
 import type { StructuredFeedback } from "@/lib/types";
 import { AnalyseResult } from "./analyse-result";
 
@@ -28,7 +29,7 @@ const MAX_DURATION_SECONDS = 300; // 5 Minuten
 const MAX_RETRIES = 2;
 const CLIENT_TIMEOUT_MS = 55_000; // 55s, knapp unter Vercel 60s
 
-type AnalyseStep = "upload" | "compressing" | "uploading" | "analysing" | "error" | "result";
+type AnalyseStep = "upload" | "detecting" | "compressing" | "uploading" | "analysing" | "error" | "result";
 
 export function VideoAnalyser() {
   const [step, setStep] = useState<AnalyseStep>("upload");
@@ -44,6 +45,7 @@ export function VideoAnalyser() {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [elapsed, setElapsed] = useState(0);
   const [compressProgress, setCompressProgress] = useState(0);
+  const [detectedRallies, setDetectedRallies] = useState<DetectedRally[]>([]);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const cameraInputRef = useRef<HTMLInputElement>(null);
@@ -113,7 +115,7 @@ export function VideoAnalyser() {
     video.src = URL.createObjectURL(file);
   }, []);
 
-  const runAnalysis = useCallback(async (storagePath: string, mimeType: string) => {
+  const runAnalysis = useCallback(async (storagePath: string, mimeType: string, rallies: DetectedRally[]) => {
     setStep("analysing");
     setErrorMessage(null);
 
@@ -128,8 +130,11 @@ export function VideoAnalyser() {
           storagePath,
           mimeType,
           strokeType,
-          analysisType: (videoDuration ?? 0) > 30 ? "match" : "einzelschlag",
+          analysisType: rallies.length > 0 ? "match" : "einzelschlag",
           videoDurationSeconds: videoDuration,
+          detectedRallies: rallies.length > 0
+            ? rallies.map((r) => ({ number: r.number, startTime: r.startTime, endTime: r.endTime }))
+            : undefined,
         }),
         signal: controller.signal,
       });
@@ -176,7 +181,22 @@ export function VideoAnalyser() {
         return;
       }
 
-      // Step 1: Compress if needed
+      // Step 1: Detect rallies via audio analysis (for videos > 30s)
+      let rallies: DetectedRally[] = [];
+      if ((videoDuration ?? 0) > 30) {
+        setStep("detecting");
+        try {
+          const result = await detectRallies(videoFile);
+          rallies = result.rallies;
+          setDetectedRallies(rallies);
+          console.log(`[Analyse] ${rallies.length} Rallys per Audio erkannt`);
+        } catch (err) {
+          console.warn("Rally detection failed, continuing without:", err);
+          // Continue without rally detection — Gemini will try on its own
+        }
+      }
+
+      // Step 2: Compress if needed
       let fileToUpload = videoFile;
       if (shouldCompress(videoFile)) {
         setStep("compressing");
@@ -193,7 +213,7 @@ export function VideoAnalyser() {
         }
       }
 
-      // Step 2: Upload video to Supabase Storage
+      // Step 3: Upload video to Supabase Storage
       setStep("uploading");
       const fileName = `${user.id}/${Date.now()}-${fileToUpload.name}`;
 
@@ -214,8 +234,8 @@ export function VideoAnalyser() {
 
       setLastStoragePath(fileName);
 
-      // Step 3: Run analysis
-      await runAnalysis(fileName, fileToUpload.type);
+      // Step 4: Run analysis with detected rallies
+      await runAnalysis(fileName, fileToUpload.type, rallies);
     } catch (err) {
       console.error("Analyse error:", err);
       setErrorMessage(err instanceof Error ? err.message : "Analyse fehlgeschlagen");
@@ -230,8 +250,8 @@ export function VideoAnalyser() {
       return;
     }
     setRetryCount((c) => c + 1);
-    await runAnalysis(lastStoragePath, videoFile.type);
-  }, [lastStoragePath, videoFile, retryCount, runAnalysis]);
+    await runAnalysis(lastStoragePath, videoFile.type, detectedRallies);
+  }, [lastStoragePath, videoFile, retryCount, runAnalysis, detectedRallies]);
 
   const handleReset = useCallback(() => {
     if (videoUrl) URL.revokeObjectURL(videoUrl);
@@ -245,6 +265,7 @@ export function VideoAnalyser() {
     setLastStoragePath(null);
     setRetryCount(0);
     setErrorMessage(null);
+    setDetectedRallies([]);
     if (fileInputRef.current) fileInputRef.current.value = "";
     if (cameraInputRef.current) cameraInputRef.current.value = "";
   }, [videoUrl]);
@@ -396,6 +417,14 @@ export function VideoAnalyser() {
                 </a>
               </span>
             </label>
+
+            {/* Detecting Rallies State */}
+            {step === "detecting" && (
+              <div className="flex items-center gap-2 text-sm text-text-secondary">
+                <Loader2 className="w-4 h-4 animate-spin text-cyan" />
+                Ballwechsel werden erkannt...
+              </div>
+            )}
 
             {/* Compress State */}
             {step === "compressing" && (

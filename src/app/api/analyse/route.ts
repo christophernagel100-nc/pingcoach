@@ -11,12 +11,19 @@ import {
 // Vercel Hobby: max 60s
 export const maxDuration = 60;
 
+const rallyTimestampSchema = z.object({
+  number: z.number(),
+  startTime: z.string(),
+  endTime: z.string(),
+});
+
 const analyseSchema = z.object({
   storagePath: z.string().min(1),
   mimeType: z.string().startsWith("video/"),
   strokeType: z.string().optional(),
   analysisType: z.enum(["einzelschlag", "sequenz", "match"]).default("einzelschlag"),
   videoDurationSeconds: z.number().optional(),
+  detectedRallies: z.array(rallyTimestampSchema).optional(),
 });
 
 export async function POST(req: NextRequest) {
@@ -86,6 +93,7 @@ export async function POST(req: NextRequest) {
       playerWeaknesses: profile?.weaknesses,
       analysisType: parsed.data.analysisType,
       videoDurationSeconds: parsed.data.videoDurationSeconds,
+      detectedRallies: parsed.data.detectedRallies,
     });
 
     console.log("[Analyse] Gemini response received, saving to DB...");
