@@ -83,7 +83,14 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Video zu gross (max. 50 MB)" }, { status: 413 });
     }
 
-    console.log("[Analyse] Sending to Gemini...");
+    console.log("[Analyse] Sending to Gemini...", {
+      size: videoBuffer.length,
+      mimeType: parsed.data.mimeType,
+      duration: parsed.data.videoDurationSeconds,
+      drillType: parsed.data.drillType,
+      rallies: parsed.data.detectedRallies?.length ?? 0,
+      mode: videoBuffer.length < 20 * 1024 * 1024 ? "inline" : "fileAPI",
+    });
 
     // Send to Gemini for analysis
     const aiResult = await analyseWithGemini({

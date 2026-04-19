@@ -37,7 +37,7 @@ const DRILL_TYPES = [
 const MAX_FILE_SIZE_MB = 50;
 const MAX_DURATION_SECONDS = 300; // 5 Minuten
 const MAX_RETRIES = 2;
-const CLIENT_TIMEOUT_MS = 55_000; // 55s, knapp unter Vercel 60s
+const CLIENT_TIMEOUT_MS = 65_000; // 65s, etwas ueber Vercel 60s (Vercel sendet eigenen Timeout-Error)
 
 type AnalyseStep = "upload" | "detecting" | "compressing" | "uploading" | "analysing" | "error" | "result";
 
@@ -176,7 +176,7 @@ export function VideoAnalyser() {
       setErrorMessage(message);
       setStep("error");
     }
-  }, [strokeType, videoDuration]);
+  }, [strokeType, drillType, videoDuration]);
 
   const handleAnalyse = useCallback(async () => {
     if (!videoFile) return;
