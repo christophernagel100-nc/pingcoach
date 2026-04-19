@@ -96,7 +96,7 @@ export async function POST(req: NextRequest) {
       .insert({
         user_id: user.id,
         stroke_type: parsed.data.strokeType || null,
-        pose_data: null,
+        pose_data: {},
         ai_feedback: (aiResult as { summary?: string }).summary || "",
         ai_feedback_structured: aiResult,
         overall_score: (aiResult as { overall_score?: number }).overall_score ?? null,
