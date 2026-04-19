@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
 import { Upload, Video, Loader2, Camera, RotateCcw } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
+import { shouldCompress, compressVideo, type CompressProgress } from "@/lib/video-compress";
 import type { StructuredFeedback } from "@/lib/types";
 import { AnalyseResult } from "./analyse-result";
 
@@ -27,7 +28,7 @@ const MAX_DURATION_SECONDS = 300; // 5 Minuten
 const MAX_RETRIES = 2;
 const CLIENT_TIMEOUT_MS = 55_000; // 55s, knapp unter Vercel 60s
 
-type AnalyseStep = "upload" | "uploading" | "analysing" | "error" | "result";
+type AnalyseStep = "upload" | "compressing" | "uploading" | "analysing" | "error" | "result";
 
 export function VideoAnalyser() {
   const [step, setStep] = useState<AnalyseStep>("upload");
@@ -42,6 +43,7 @@ export function VideoAnalyser() {
   const [retryCount, setRetryCount] = useState(0);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [elapsed, setElapsed] = useState(0);
+  const [compressProgress, setCompressProgress] = useState(0);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const cameraInputRef = useRef<HTMLInputElement>(null);
@@ -72,8 +74,9 @@ export function VideoAnalyser() {
       return;
     }
 
-    if (file.size > MAX_FILE_SIZE_MB * 1024 * 1024) {
-      toast.error(`Video darf maximal ${MAX_FILE_SIZE_MB} MB gross sein`);
+    // Hard limit at 500MB — anything above is unreasonable even with compression
+    if (file.size > 500 * 1024 * 1024) {
+      toast.error("Video darf maximal 500 MB gross sein");
       return;
     }
 
@@ -173,14 +176,31 @@ export function VideoAnalyser() {
         return;
       }
 
-      // Step 1: Upload video to Supabase Storage
+      // Step 1: Compress if needed
+      let fileToUpload = videoFile;
+      if (shouldCompress(videoFile)) {
+        setStep("compressing");
+        setCompressProgress(0);
+        try {
+          fileToUpload = await compressVideo(videoFile, (p: CompressProgress) => {
+            setCompressProgress(p.percent);
+          });
+        } catch (err) {
+          console.error("Compression error:", err);
+          toast.error("Video-Komprimierung fehlgeschlagen. Bitte versuche ein kuerzeres Video.");
+          setStep("upload");
+          return;
+        }
+      }
+
+      // Step 2: Upload video to Supabase Storage
       setStep("uploading");
-      const fileName = `${user.id}/${Date.now()}-${videoFile.name}`;
+      const fileName = `${user.id}/${Date.now()}-${fileToUpload.name}`;
 
       const { error: uploadError } = await supabase
         .storage
         .from("pc-videos")
-        .upload(fileName, videoFile, {
+        .upload(fileName, fileToUpload, {
           cacheControl: "300",
           upsert: false,
         });
@@ -194,8 +214,8 @@ export function VideoAnalyser() {
 
       setLastStoragePath(fileName);
 
-      // Step 2: Run analysis
-      await runAnalysis(fileName, videoFile.type);
+      // Step 3: Run analysis
+      await runAnalysis(fileName, fileToUpload.type);
     } catch (err) {
       console.error("Analyse error:", err);
       setErrorMessage(err instanceof Error ? err.message : "Analyse fehlgeschlagen");
@@ -267,7 +287,7 @@ export function VideoAnalyser() {
                   Video hochladen
                 </span>
                 <span className="text-text-muted text-xs">
-                  MP4, MOV, WebM — max. {MAX_FILE_SIZE_MB} MB, max. {Math.floor(MAX_DURATION_SECONDS / 60)} Min
+                  MP4, MOV, WebM — max. {Math.floor(MAX_DURATION_SECONDS / 60)} Min (wird automatisch komprimiert)
                 </span>
               </button>
               <button
@@ -377,6 +397,25 @@ export function VideoAnalyser() {
               </span>
             </label>
 
+            {/* Compress State */}
+            {step === "compressing" && (
+              <div className="space-y-2">
+                <div className="flex items-center gap-2 text-sm text-text-secondary">
+                  <Loader2 className="w-4 h-4 animate-spin text-cyan" />
+                  Video wird komprimiert... {compressProgress}%
+                </div>
+                <div className="w-full h-1.5 rounded-full bg-white/[0.06] overflow-hidden">
+                  <div
+                    className="h-full rounded-full bg-cyan transition-all duration-300"
+                    style={{ width: `${compressProgress}%` }}
+                  />
+                </div>
+                <p className="text-xs text-text-muted">
+                  Wird auf 720p reduziert fuer schnelleren Upload und bessere Analyse.
+                </p>
+              </div>
+            )}
+
             {/* Upload State */}
             {step === "uploading" && (
               <div className="flex items-center gap-2 text-sm text-text-secondary">
@@ -431,7 +470,7 @@ export function VideoAnalyser() {
               </div>
             )}
 
-            {/* Action Buttons — only in upload step */}
+            {/* Action Buttons — only in upload step (not during compress/upload/analyse) */}
             {step === "upload" && (
               <div className="flex gap-3">
                 <Button
