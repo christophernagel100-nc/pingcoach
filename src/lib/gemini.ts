@@ -81,21 +81,35 @@ ANTWORT-FORMAT (valides JSON):
 }`;
 
 const RALLY_ANALYSIS_PROMPT = `Du bist PingCoach, ein erfahrener Tischtennis-Trainer und Biomechanik-Experte.
-Du analysierst ein laengeres Video das mehrere Ballwechsel (Rallys) enthaelt.
+Du analysierst ein Tischtennis-Video und identifizierst JEDEN einzelnen Ballwechsel.
 
-DEINE AUFGABEN:
-1. Erkenne alle einzelnen Ballwechsel im Video (Rally = von Aufschlag bis Punktende)
-2. Gib eine Gesamtbewertung des Spiels/Trainings
-3. Analysiere jeden Ballwechsel einzeln
-4. Identifiziere die Top-3 Verbesserungsbereiche ueber alle Rallys
+SCHRITT 1 — BALLWECHSEL ERKENNEN (WICHTIGSTE AUFGABE):
+Schau dir das GESAMTE Video sehr genau an, Sekunde fuer Sekunde.
+Ein Ballwechsel (Rally) ist definiert als:
+- BEGINN: Der Moment in dem ein Spieler den Ball zum Aufschlag hochwirft ODER der Ball ins Spiel kommt
+- ENDE: Der Moment in dem der Punkt vorbei ist (Ball im Netz, Ball neben dem Tisch, Ball wird nicht zurueckgespielt)
+- ZWISCHEN den Rallys: Pausen wo Spieler Ball aufheben, sich vorbereiten, kurz warten — das ist KEINE Rally
 
-REGELN:
-- Timestamps im Format MM:SS (z.B. "00:15" fuer Sekunde 15)
-- Wenn kein klarer Aufschlag erkennbar ist, nutze Spielunterbrechungen als Rally-Grenzen
-- Markiere besonders gute oder lehrreiche Rallys als "highlight: true"
-- Sei konkret bei jedem Rally-Feedback (nicht wiederholen, was schon gesagt wurde)
-- Passe dein Feedback an das Spieler-Level an
-- Achte besonders auf: Schlaegerhaltung, Koerperhaltung, Beinarbeit, Ausschwung, Timing, Gewichtsverlagerung
+HAEUFIGE FEHLER DIE DU VERMEIDEN MUSST:
+- Ueberspringe KEINE Rallys — zaehle JEDEN Ballwechsel, auch kurze (1-2 Schlaege)
+- Fasse NICHT mehrere Rallys zu einer zusammen
+- Schneide Rallys NICHT zu kurz ab — der Zeitraum muss den GESAMTEN Ballwechsel abdecken
+- Verwechsle Pausen/Ballaufheben NICHT mit Rallys
+- Ein typisches Trainingsvideo von 1-2 Minuten enthaelt normalerweise 6-15 Ballwechsel
+
+SCHRITT 2 — SCHLAGTYPEN KORREKT ERKENNEN:
+Unterscheide genau zwischen diesen Schlaegen anhand der BEWEGUNG:
+- TOPSPIN: Schnelle Vorwaerts-Aufwaerts-Bewegung, Schlaeger geht von unten-hinten nach oben-vorne, viel Armgeschwindigkeit, explosiv
+- PUSH/SCHUPF: Kurze, kontrollierte Vorwaerts-Abwaerts-Bewegung, Schlaeger bleibt relativ offen, langsam, unter Tischhoehe
+- BLOCK: Minimale Bewegung, Schlaeger wird fast nur hingehalten, Ball prallt ab, kein Schwung
+- FLIP: Kurze Handgelenkbewegung ueber dem Tisch bei kurzem Ball
+- AUFSCHLAG: Ballwurf + Schlag, immer am Anfang einer Rally
+Wenn zwei Spieler sich Topspin-Baelle zuspielen, ist das "vorhand_topspin" oder "rueckhand_topspin" — NICHT Schupf/Push.
+
+SCHRITT 3 — ANALYSE:
+Fuer jeden Ballwechsel: konkretes Feedback zu Technik, Taktik oder Positionierung.
+Markiere besonders gute oder lehrreiche Rallys als "highlight: true".
+Passe dein Feedback an das Spieler-Level an.
 
 ANTWORT-FORMAT (valides JSON):
 {
@@ -107,7 +121,7 @@ ANTWORT-FORMAT (valides JSON):
       "number": 1,
       "start_time": "00:05",
       "end_time": "00:12",
-      "stroke_types": ["vorhand_topspin", "rueckhand_block"],
+      "stroke_types": ["vorhand_topspin", "rueckhand_topspin"],
       "score": 0-100,
       "feedback": "Konkretes Feedback zu dieser Rally",
       "highlight": false
@@ -313,9 +327,19 @@ async function uploadVideoToFileAPI(buffer: Buffer, mimeType: string) {
 function buildPrompt(request: AnalyseRequest, isRallyAnalysis: boolean): string {
   const { strokeType, playerLevel, playerWeaknesses, analysisType, videoDurationSeconds } = request;
 
-  let prompt = isRallyAnalysis
-    ? "Analysiere das folgende Tischtennis-Video und identifiziere alle Ballwechsel:\n\n"
-    : "Analysiere den folgenden Tischtennis-Schlag:\n\n";
+  let prompt: string;
+
+  if (isRallyAnalysis) {
+    const expectedRallies = videoDurationSeconds
+      ? `Bei ${Math.round(videoDurationSeconds)} Sekunden Video erwarte ich ca. ${Math.max(3, Math.round(videoDurationSeconds / 10))}-${Math.round(videoDurationSeconds / 6)} Ballwechsel.`
+      : "";
+
+    prompt = `Analysiere das folgende Tischtennis-Video und identifiziere JEDEN einzelnen Ballwechsel.
+${expectedRallies}
+Schau dir das Video Sekunde fuer Sekunde an. Ueberspringe NICHTS.\n\n`;
+  } else {
+    prompt = "Analysiere den folgenden Tischtennis-Schlag:\n\n";
+  }
 
   if (strokeType && !isRallyAnalysis) prompt += `Schlagtyp: ${strokeType}\n`;
   if (playerLevel) prompt += `Spieler-Level: ${playerLevel}\n`;
