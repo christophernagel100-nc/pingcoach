@@ -231,3 +231,28 @@ export interface TechniqueMistake {
   correction: string
   severity: 'leicht' | 'mittel' | 'schwer'
 }
+
+// /wissen Content-Pipeline Types
+
+export interface WissenFaqItem {
+  question: string
+  answer: string
+}
+
+export interface WissenHowTo {
+  name: string
+  steps: string[]
+}
+
+export interface WissenArticleMetadata {
+  slug: string
+  title: string
+  description: string
+  date: string
+  author: string
+  relatedTechniqueIds: string[]
+  seoKeywords: string[]
+  quickTip: string
+  faq?: WissenFaqItem[]
+  howTo?: WissenHowTo
+}

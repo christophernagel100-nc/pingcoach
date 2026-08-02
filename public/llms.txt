@@ -1,0 +1,14 @@
+# PingCoach
+
+> PingCoach ist ein KI-gestützter Tischtennis-Trainer: Video aufnehmen, Technik per KI-Analyse auswerten (MediaPipe-Pose-Erkennung + Gemini-Feedback), personalisiert trainieren — ohne proprietäre Hardware. Das Video verlässt nie das Gerät, nur anonymisierte Bewegungsdaten werden analysiert.
+
+## Wissen
+
+Technik-Guides, Fehlerbilder und Trainingswissen für Vereins- und Freizeitspieler, geschrieben aus der Perspektive eines erfahrenen Wettkampfspielers:
+
+- [Warum rutscht dein Vorhand-Topspin ab?](https://pingcoach.nailcrest.de/wissen/warum-vorhand-topspin-rutscht-ab): Die drei häufigsten Ursachen für einen unkontrollierten Vorhand-Topspin (fehlende Hüftrotation, später Treffpunkt, zu offener Schlägerwinkel) und wie man sie korrigiert.
+- [Rückhand-Block geht ständig ins Netz oder raus](https://pingcoach.nailcrest.de/wissen/rueckhand-block-netz-oder-raus): Warum der Rückhand-Block gegen Topspin scheitert — Schlägerwinkel, Eigenbewegung und Tischabstand als häufigste Ursachen.
+
+## Produkt
+
+- [Startseite](https://pingcoach.nailcrest.de/): Überblick über PingCoach, Warteliste für den Start.

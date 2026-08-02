@@ -80,6 +80,8 @@ Supabase-Instanz: `vaxtyfdznwylwhndybrq.supabase.co` (EU Frankfurt)
 | `/einstellungen` | Einstellungen | Account, Datenschutz, Datenexport, Account loeschen |
 | `/datenschutz` | Datenschutz | Vollstaendige Datenschutzerklaerung |
 | `/impressum` | Impressum | Pflichtangaben |
+| `/wissen` | Wissen (Content-Hub) | KI-gestützte, expertengegründete Artikel (Technik, Taktik) — SEO/GEO-Funnel zur Warteliste |
+| `/wissen/[slug]` | Artikel-Detail | Einzelner Wissen-Artikel (MDX), inkl. FAQPage/HowTo/Article-Schema, verwandte Drills |
 
 ### API Routes
 
@@ -247,4 +249,15 @@ npm install zod
 
 # Utils
 npm install clsx tailwind-merge lucide-react date-fns
+
+# /wissen Content-Pipeline (MDX)
+npm install @next/mdx @mdx-js/loader @mdx-js/react @types/mdx
+# Claude API nur im Generierungs-Skript (scripts/generate-wissen-article.ts), nicht Runtime:
+# npm install @anthropic-ai/sdk
 ```
+
+## `/wissen` Content-Pipeline
+
+KI-gestützte, expertengegründete Artikel (Technik-Guides, Taktik) unter `content/wissen/*.mdx`, gegründet auf `data/techniques.json`/`data/drills.json` und `content/fact-sheet.md` (Ton, Pseudonym-Persona, Anti-Halluzination-Guardrails). Ziel: SEO- und GEO-Traffic (Auffindbarkeit durch ChatGPT/Perplexity/Google AI Overviews via `robots.ts`-Freigabe für KI-Crawler und `public/llms.txt`), der in die Warteliste trichtert (`WaitlistForm`-`source`-Prop trackt Herkunft).
+
+Artikel-Frontmatter folgt der `@next/mdx`-nativen `export const metadata = {...}`-Syntax (kein `gray-matter`), siehe `src/lib/types.ts` → `WissenArticleMetadata`. Neue Artikel: `.mdx`-Datei in `content/wissen/` anlegen, `relatedTechniqueIds` auf existierende `techniques.json`-IDs setzen — Verwandte Drills werden automatisch aufgelöst.
