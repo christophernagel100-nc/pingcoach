@@ -1,7 +1,31 @@
 import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
+// Routes that never need auth state — skip Supabase entirely so crawler/bot
+// traffic on these (esp. /wissen, /sitemap.xml) can't hang the whole edge
+// function on a slow Supabase response (cause of MIDDLEWARE_INVOCATION_TIMEOUT).
+const FULLY_PUBLIC_PATHS = [
+  '/',
+  '/api/auth',
+  '/api/waitlist',
+  '/wissen',
+  '/robots.txt',
+  '/sitemap.xml',
+  '/llms.txt',
+]
+
+// Public, but still need to know auth state (redirect logged-in users away).
+const AUTH_AWARE_PUBLIC_PATHS = ['/login', '/register']
+
+function matchesPath(pathname: string, paths: string[]): boolean {
+  return paths.some((path) => pathname === path || pathname.startsWith(path + '/'))
+}
+
 export async function middleware(request: NextRequest) {
+  if (matchesPath(request.nextUrl.pathname, FULLY_PUBLIC_PATHS)) {
+    return NextResponse.next({ request })
+  }
+
   let supabaseResponse = NextResponse.next({ request })
 
   const supabase = createServerClient(
@@ -25,25 +49,14 @@ export async function middleware(request: NextRequest) {
     }
   )
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
+  // Bounded wait: a slow/unreachable Supabase must never hang the whole edge
+  // function (that's what caused MIDDLEWARE_INVOCATION_TIMEOUT). Fail closed
+  // (treat as logged-out) after 5s instead of blocking indefinitely.
+  const timeout = new Promise<null>((resolve) => setTimeout(() => resolve(null), 5000))
+  const userPromise = supabase.auth.getUser().then((result) => result.data.user)
+  const user = await Promise.race([userPromise, timeout])
 
-  // Public routes that don't need auth
-  const publicPaths = [
-    '/',
-    '/login',
-    '/register',
-    '/api/auth',
-    '/api/waitlist',
-    '/wissen',
-    '/robots.txt',
-    '/sitemap.xml',
-    '/llms.txt',
-  ]
-  const isPublic = publicPaths.some(
-    (path) => request.nextUrl.pathname === path || request.nextUrl.pathname.startsWith(path + '/')
-  )
+  const isPublic = matchesPath(request.nextUrl.pathname, AUTH_AWARE_PUBLIC_PATHS)
 
   // Protected routes: redirect to login if not authenticated
   if (!user && !isPublic) {
